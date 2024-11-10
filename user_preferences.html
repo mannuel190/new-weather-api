@@ -10,13 +10,17 @@
 
     <form id="preferences-form">
         <input type="hidden" id="pref_id"> <!-- Hidden field to track the preference being edited -->
-        
+
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location" required>
+        <br>
+
         <label for="latitude">Latitude:</label>
-        <input type="number" step="0.01" id="latitude" name="latitude" required>
+        <input type="number" step="0.01" id="latitude" name="latitude" readonly required>
         <br>
 
         <label for="longitude">Longitude:</label>
-        <input type="number" step="0.01" id="longitude" name="longitude" required>
+        <input type="number" step="0.01" id="longitude" name="longitude" readonly required>
         <br>
 
         <label for="temp_min">Minimum Temperature (°C):</label>
@@ -41,6 +45,7 @@
     <h2>Saved Preferences</h2>
     <table border="1" id="preferences-table">
         <tr>
+            <th>Location</th>
             <th>Latitude</th>
             <th>Longitude</th>
             <th>Temp Min</th>
@@ -61,49 +66,74 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3dWFtdXpjYnNya21wamtyZG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAxNDE0MDIsImV4cCI6MjA0NTcxNzQwMn0.SPo5KG3ufHN0dt4Jxvl-sAJ9tZanRA9G1JxGHFrLOBc';
         const supabase = createClient(supabaseUrl, supabaseKey);
 
-        let isEditing = false; // Track if we're in edit mode
+        // Initialize isEditing as false
+        let isEditing = false;
+
+        async function getCoordinates(location) {
+            const geocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${location}&key=3935ede2f1d745c896731b673f7fc90b`;
+
+            try {
+                const response = await fetch(geocodeUrl);
+                const data = await response.json();
+
+                if (data.results.length > 0) {
+                    const { lat, lng } = data.results[0].geometry;
+                    return { latitude: lat, longitude: lng };
+                } else {
+                    throw new Error("Location not found.");
+                }
+            } catch (error) {
+                alert(`Geocoding Error: ${error.message}`);
+            }
+        }
 
         document.getElementById('preferences-form').addEventListener('submit', async (event) => {
             event.preventDefault();
 
-            const latitude = document.getElementById('latitude').value;
-            const longitude = document.getElementById('longitude').value;
+            const location = document.getElementById('location').value;
             const temp_min = document.getElementById('temp_min').value;
             const temp_max = document.getElementById('temp_max').value;
             const humidity_min = document.getElementById('humidity_min').value;
             const humidity_max = document.getElementById('humidity_max').value;
             const pref_id = document.getElementById('pref_id').value;
-            const user_id = localStorage.getItem('user_id'); 
+            const user_id = localStorage.getItem('user_id');
 
-            if (isEditing) {
-                // Update existing preference
-                const { error } = await supabase
-                    .from('user_preferences')
-                    .update({ latitude, longitude, temp_min, temp_max, humidity_min, humidity_max })
-                    .eq('pref_id', pref_id);
+            // Resolve coordinates
+            const { latitude, longitude } = await getCoordinates(location);
+            if (latitude && longitude) {
+                document.getElementById('latitude').value = latitude;
+                document.getElementById('longitude').value = longitude;
 
-                if (error) {
-                    alert("Error updating preference: " + error.message);
+                if (isEditing) {
+                    const { error } = await supabase
+                        .from('user_preferences')
+                        .update({ location, latitude, longitude, temp_min, temp_max, humidity_min, humidity_max })
+                        .eq('pref_id', pref_id);
+
+                    if (error) {
+                        alert("Error updating preference: " + error.message);
+                    } else {
+                        alert("Preference updated successfully!");
+                        isEditing = false;
+                        document.getElementById('save-button').textContent = "Save Preferences";
+                    }
                 } else {
-                    alert("Preference updated successfully!");
-                    isEditing = false;
-                    document.getElementById('save-button').textContent = "Save Preferences"; // Reset button text
+                    const { error } = await supabase
+                        .from('user_preferences')
+                        .insert([{ user_id, location, latitude, longitude, temp_min, temp_max, humidity_min, humidity_max, deleted: false }]);
+                    
+                    if (error) {
+                        alert("Error saving preferences: " + error.message);
+                    } else {
+                        alert("Preferences saved successfully!");
+                    }
                 }
+
+                loadPreferences();
+                document.getElementById('preferences-form').reset();
             } else {
-                // Insert new preference
-                const { error } = await supabase
-                    .from('user_preferences')
-                    .insert([{ user_id, latitude, longitude, temp_min, temp_max, humidity_min, humidity_max, deleted: false }]);
-                
-                if (error) {
-                    alert("Error saving preferences: " + error.message);
-                } else {
-                    alert("Preferences saved successfully!");
-                }
+                alert("Unable to save. Invalid location.");
             }
-
-            loadPreferences();
-            document.getElementById('preferences-form').reset(); // Clear form
         });
 
         async function loadPreferences() {
@@ -122,28 +152,26 @@
 
             const table = document.getElementById('preferences-table');
 
-            // Clear existing rows (except for header)
             while (table.rows.length > 1) {
                 table.deleteRow(1);
             }
 
             data.forEach(preference => {
                 const row = table.insertRow();
-                row.insertCell(0).textContent = preference.latitude;
-                row.insertCell(1).textContent = preference.longitude;
-                row.insertCell(2).textContent = preference.temp_min;
-                row.insertCell(3).textContent = preference.temp_max;
-                row.insertCell(4).textContent = preference.humidity_min;
-                row.insertCell(5).textContent = preference.humidity_max;
+                row.insertCell(0).textContent = preference.location;
+                row.insertCell(1).textContent = preference.latitude;
+                row.insertCell(2).textContent = preference.longitude;
+                row.insertCell(3).textContent = preference.temp_min;
+                row.insertCell(4).textContent = preference.temp_max;
+                row.insertCell(5).textContent = preference.humidity_min;
+                row.insertCell(6).textContent = preference.humidity_max;
 
-                // Edit button
-                const editCell = row.insertCell(6);
+                const editCell = row.insertCell(7);
                 const editButton = document.createElement('button');
                 editButton.textContent = 'Edit';
                 editButton.onclick = () => editPreference(preference);
                 editCell.appendChild(editButton);
 
-                // Delete button
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = 'Delete';
                 deleteButton.onclick = () => deletePreference(preference.pref_id);
@@ -152,8 +180,8 @@
         }
 
         function editPreference(preference) {
-            // Populate form fields with the preference data for editing
             document.getElementById('pref_id').value = preference.pref_id;
+            document.getElementById('location').value = preference.location;
             document.getElementById('latitude').value = preference.latitude;
             document.getElementById('longitude').value = preference.longitude;
             document.getElementById('temp_min').value = preference.temp_min;
@@ -163,20 +191,6 @@
 
             isEditing = true;
             document.getElementById('save-button').textContent = "Update Preferences";
-        }
-
-        async function deletePreference(pref_id) {
-            const { error } = await supabase
-                .from('user_preferences')
-                .update({ deleted: true })
-                .eq('pref_id', pref_id);
-
-            if (error) {
-                alert("Error deleting preference: " + error.message);
-            } else {
-                alert("Preference deleted successfully!");
-                loadPreferences();
-            }
         }
 
         document.addEventListener('DOMContentLoaded', loadPreferences);
