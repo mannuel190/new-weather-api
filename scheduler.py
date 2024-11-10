@@ -42,8 +42,8 @@ def fetch_weather_data(latitude, longitude):
         data = response.json()
 
         # Save the response data to a JSON file for inspection
-        with open("weather_response.json", "w") as file:
-            json.dump(data, file, indent=4)
+        #with open("weather_response.json", "w") as file:
+            #json.dump(data, file, indent=4)
         
         # Parse the temperature and humidity from the 'current' key
         temp = data['current'].get('temperature_2m')
