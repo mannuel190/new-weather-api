@@ -40,28 +40,58 @@
 
 
     <script>
-    async function fetchWeatherData() {
-    const latitude = document.getElementById("latitude").value;
-    const longitude = document.getElementById("longitude").value;
-    const startDate = document.getElementById("start_date").value;
-    const endDate = document.getElementById("end_date").value;
+        async function getCoordinates(location) {
+            const geocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${location}&key=3935ede2f1d745c896731b673f7fc90b`;
 
-    // Explicitly specify the local Flask server URL
-    const url = `http://127.0.0.1:5000/weather?latitude=${latitude}&longitude=${longitude}&start_date=${startDate}&end_date=${endDate}`;
+            try {
+                const response = await fetch(geocodeUrl);
+                const data = await response.json();
 
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (response.ok) {
-            displayWeatherData(data);
-        } else {
-            document.getElementById("weatherData").innerText = `Error: ${data.error}`;
+                if (data.results.length > 0) {
+                    const { lat, lng } = data.results[0].geometry;
+                    return { latitude: lat, longitude: lng };
+                } else {
+                    throw new Error("Location not found.");
+                }
+            } catch (error) {
+                document.getElementById("weatherData").innerText = `Geocoding Error: ${error.message}`;
+            }
         }
-    } catch (error) {
-        document.getElementById("weatherData").innerText = `Error: ${error.message}`;
-    }
-}
+
+        async function fetchWeatherData() {
+            const location = document.getElementById("location").value;
+            let latitude, longitude;
+
+            if (location) {
+                const coords = await getCoordinates(location);
+                if (coords) {
+                    latitude = coords.latitude;
+                    longitude = coords.longitude;
+                } else {
+                    return; // Exit if location not found
+                }
+            } else {
+                latitude = document.getElementById("latitude").value;
+                longitude = document.getElementById("longitude").value;
+            }
+
+            const startDate = document.getElementById("start_date").value;
+            const endDate = document.getElementById("end_date").value;
+
+            const url = `http://127.0.0.1:5000/weather?latitude=${latitude}&longitude=${longitude}&start_date=${startDate}&end_date=${endDate}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (response.ok) {
+                    displayWeatherData(data);
+                } else {
+                    document.getElementById("weatherData").innerText = `Error: ${data.error}`;
+                }
+            } catch (error) {
+                document.getElementById("weatherData").innerText = `Error: ${error.message}`;
+            }
+        }
 
 
         function displayWeatherData(data) {
