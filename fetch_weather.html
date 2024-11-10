@@ -38,6 +38,9 @@
         <button type="button" onclick="window.location.href='user_preferences.html'">change user preferences</button>
     <div></div>
 
+    <!-- Logout Button -->
+    <button id="logout-button">Logout</button>
+
 
     <script>
         async function getCoordinates(location) {
@@ -109,6 +112,11 @@
                 `;
             });
         }
+
+        document.getElementById('logout-button').addEventListener('click', () => {
+            localStorage.removeItem('user_id');
+            window.location.href = 'login.html';
+        });
     </script>
 </body>
 </html>
