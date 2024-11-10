@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+
+    <form id="login-form">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+
+        <button type="submit">Login</button>
+    </form>
+
+    <!-- Include Supabase from CDN -->
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        const supabaseUrl = 'https://ewuamuzcbsrkmpjkrdmn.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3dWFtdXpjYnNya21wamtyZG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAxNDE0MDIsImV4cCI6MjA0NTcxNzQwMn0.SPo5KG3ufHN0dt4Jxvl-sAJ9tZanRA9G1JxGHFrLOBc'; // Replace with your actual public anon key
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        // Handle form submission
+        document.getElementById('login-form').addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevent the form from reloading the page
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try 
+            {
+                // Query the users table to check for matching email and password
+                const { data, error } = await supabase
+                    .from('users')  
+                    .select('id') // Only select the user ID
+                    .eq('email', email)
+                    .eq('password', password)
+                    .eq('deleted', false) // Exclude deleted accounts
+                    .single(); // Ensure it only returns one row
+
+                if (error) 
+                {
+                    alert('Error logging in: ' + error.message);
+                    return;
+                }
+
+                if (data) 
+                {
+                    // Store the user_id in localStorage
+                    localStorage.setItem('user_id', data.id);
+                    alert('Login successful!');
+                    window.location.href = 'fetch_weather.html'; // Redirect to the weather page on success
+                } else 
+                {
+                    alert('Invalid email or password!');
+                }
+            } catch (error) 
+            {
+                alert('An error occurred: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preferences</title>
+</head>
+<body>
+    <h1>Set Your Preferences</h1>
+
+    <form id="preferences-form">
+        <input type="hidden" id="pref_id"> <!-- Hidden field to track the preference being edited -->
+        
+        <label for="latitude">Latitude:</label>
+        <input type="number" step="0.01" id="latitude" name="latitude" required>
+        <br>
+
+        <label for="longitude">Longitude:</label>
+        <input type="number" step="0.01" id="longitude" name="longitude" required>
+        <br>
+
+        <label for="temp_min">Minimum Temperature (°C):</label>
+        <input type="number" id="temp_min" name="temp_min" required>
+        <br>
+
+        <label for="temp_max">Maximum Temperature (°C):</label>
+        <input type="number" id="temp_max" name="temp_max" required>
+        <br>
+
+        <label for="humidity_min">Minimum Humidity (%):</label>
+        <input type="number" id="humidity_min" name="humidity_min" required>
+        <br>
+
+        <label for="humidity_max">Maximum Humidity (%):</label>
+        <input type="number" id="humidity_max" name="humidity_max" required>
+        <br>
+
+        <button type="submit" id="save-button">Save Preferences</button>
+    </form>
+
+    <h2>Saved Preferences</h2>
+    <table border="1" id="preferences-table">
+        <tr>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <th>Temp Min</th>
+            <th>Temp Max</th>
+            <th>Humidity Min</th>
+            <th>Humidity Max</th>
+            <th>Actions</th>
+        </tr>
+    </table>
+
+    <!-- Logout Button -->
+    <button id="logout-button">Logout</button>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    
+        const supabaseUrl = 'https://ewuamuzcbsrkmpjkrdmn.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3dWFtdXpjYnNya21wamtyZG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAxNDE0MDIsImV4cCI6MjA0NTcxNzQwMn0.SPo5KG3ufHN0dt4Jxvl-sAJ9tZanRA9G1JxGHFrLOBc';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        let isEditing = false; // Track if we're in edit mode
+
+        document.getElementById('preferences-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const latitude = document.getElementById('latitude').value;
+            const longitude = document.getElementById('longitude').value;
+            const temp_min = document.getElementById('temp_min').value;
+            const temp_max = document.getElementById('temp_max').value;
+            const humidity_min = document.getElementById('humidity_min').value;
+            const humidity_max = document.getElementById('humidity_max').value;
+            const pref_id = document.getElementById('pref_id').value;
+            const user_id = localStorage.getItem('user_id'); 
+
+            if (isEditing) {
+                // Update existing preference
+                const { error } = await supabase
+                    .from('user_preferences')
+                    .update({ latitude, longitude, temp_min, temp_max, humidity_min, humidity_max })
+                    .eq('pref_id', pref_id);
+
+                if (error) {
+                    alert("Error updating preference: " + error.message);
+                } else {
+                    alert("Preference updated successfully!");
+                    isEditing = false;
+                    document.getElementById('save-button').textContent = "Save Preferences"; // Reset button text
+                }
+            } else {
+                // Insert new preference
+                const { error } = await supabase
+                    .from('user_preferences')
+                    .insert([{ user_id, latitude, longitude, temp_min, temp_max, humidity_min, humidity_max, deleted: false }]);
+                
+                if (error) {
+                    alert("Error saving preferences: " + error.message);
+                } else {
+                    alert("Preferences saved successfully!");
+                }
+            }
+
+            loadPreferences();
+            document.getElementById('preferences-form').reset(); // Clear form
+        });
+
+        async function loadPreferences() {
+            const user_id = localStorage.getItem('user_id'); 
+
+            const { data, error } = await supabase
+                .from('user_preferences')
+                .select('*')
+                .eq('user_id', user_id)
+                .eq('deleted', false);
+
+            if (error) {
+                alert("Error loading preferences: " + error.message);
+                return;
+            }
+
+            const table = document.getElementById('preferences-table');
+
+            // Clear existing rows (except for header)
+            while (table.rows.length > 1) {
+                table.deleteRow(1);
+            }
+
+            data.forEach(preference => {
+                const row = table.insertRow();
+                row.insertCell(0).textContent = preference.latitude;
+                row.insertCell(1).textContent = preference.longitude;
+                row.insertCell(2).textContent = preference.temp_min;
+                row.insertCell(3).textContent = preference.temp_max;
+                row.insertCell(4).textContent = preference.humidity_min;
+                row.insertCell(5).textContent = preference.humidity_max;
+
+                // Edit button
+                const editCell = row.insertCell(6);
+                const editButton = document.createElement('button');
+                editButton.textContent = 'Edit';
+                editButton.onclick = () => editPreference(preference);
+                editCell.appendChild(editButton);
+
+                // Delete button
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.onclick = () => deletePreference(preference.pref_id);
+                editCell.appendChild(deleteButton);
+            });
+        }
+
+        function editPreference(preference) {
+            // Populate form fields with the preference data for editing
+            document.getElementById('pref_id').value = preference.pref_id;
+            document.getElementById('latitude').value = preference.latitude;
+            document.getElementById('longitude').value = preference.longitude;
+            document.getElementById('temp_min').value = preference.temp_min;
+            document.getElementById('temp_max').value = preference.temp_max;
+            document.getElementById('humidity_min').value = preference.humidity_min;
+            document.getElementById('humidity_max').value = preference.humidity_max;
+
+            isEditing = true;
+            document.getElementById('save-button').textContent = "Update Preferences";
+        }
+
+        async function deletePreference(pref_id) {
+            const { error } = await supabase
+                .from('user_preferences')
+                .update({ deleted: true })
+                .eq('pref_id', pref_id);
+
+            if (error) {
+                alert("Error deleting preference: " + error.message);
+            } else {
+                alert("Preference deleted successfully!");
+                loadPreferences();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadPreferences);
+
+        document.getElementById('logout-button').addEventListener('click', () => {
+            localStorage.removeItem('user_id');
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>
