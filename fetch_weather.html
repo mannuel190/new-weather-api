@@ -8,7 +8,11 @@
         body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; }
         label, input { display: block; margin: 10px 0; }
         #weatherData { margin-top: 20px; }
+        #map { height: 400px; margin-top: 20px; }
     </style>
+    <!-- Mapbox CSS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <h1>Weather Data Request</h1>
@@ -17,63 +21,94 @@
         <label for="location">Location (City or Address):</label>
         <input type="text" id="location" name="location" placeholder="Enter city or address">
 
+        <!-- Hidden latitude and longitude fields, auto-filled by JavaScript -->
         <label for="latitude">Latitude:</label>
-        <input type="text" id="latitude" name="latitude" required>
+        <input type="text" hidden id="latitude" name="latitude" required>
 
         <label for="longitude">Longitude:</label>
-        <input type="text" id="longitude" name="longitude" required>
+        <input type="text" hidden id="longitude" name="longitude" required>
 
+        <!-- Date range inputs for weather data -->
         <label for="start_date">Start Date (YYYY-MM-DD):</label>
         <input type="date" id="start_date" name="start_date" required>
 
         <label for="end_date">End Date (YYYY-MM-DD):</label>
         <input type="date" id="end_date" name="end_date" required>
 
+        <!-- Buttons to fetch weather data and use current location -->
         <button type="button" onclick="fetchWeatherData()">Get Weather Data</button>
+        <button type="button" onclick="useMyLocation()">Use My Location</button>
     </form>
 
+    <!-- Display fetched weather data -->
     <div id="weatherData"></div>
+
+    <!-- Map Display -->
+    <div id="map"></div>
     
     <div></div>
-        <button type="button" onclick="window.location.href='user_preferences.html'">change user preferences</button>
+    <button type="button" onclick="window.location.href='user_preferences.html'">Change User Preferences</button>
     <div></div>
 
     <!-- Logout Button -->
     <button id="logout-button">Logout</button>
 
-
+    <!-- Mapbox JS -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js"></script>
     <script>
-        async function getCoordinates(location) {
+        // Set the Mapbox API access token
+        mapboxgl.accessToken = 'pk.eyJ1IjoibWFubnVlbGFkZSIsImEiOiJjbTNjODJqZWQxbWdzMmxzZTJwbzBoeHNxIn0.6cYb5nF7itMY_r9w40Bijw';
+
+        // Function to get latitude and longitude based on user-input location
+        async function getCoordinates(location)
+        {
             const geocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${location}&key=3935ede2f1d745c896731b673f7fc90b`;
 
-            try {
+            try
+            {
                 const response = await fetch(geocodeUrl);
                 const data = await response.json();
 
-                if (data.results.length > 0) {
+                if (data.results.length > 0)
+                {
                     const { lat, lng } = data.results[0].geometry;
                     return { latitude: lat, longitude: lng };
-                } else {
+                }
+                else
+                {
                     throw new Error("Location not found.");
                 }
-            } catch (error) {
+            }
+            catch (error)
+            {
                 document.getElementById("weatherData").innerText = `Geocoding Error: ${error.message}`;
             }
         }
 
-        async function fetchWeatherData() {
+        // Function to fetch weather data based on provided location or coordinates
+        async function fetchWeatherData()
+        {
             const location = document.getElementById("location").value;
             let latitude, longitude;
 
-            if (location) {
+            // If location name is provided, get coordinates from geocoding service
+            if (location)
+            {
                 const coords = await getCoordinates(location);
-                if (coords) {
+                if (coords)
+                {
                     latitude = coords.latitude;
                     longitude = coords.longitude;
-                } else {
+                    document.getElementById("latitude").value = latitude;
+                    document.getElementById("longitude").value = longitude;
+                }
+                else
+                {
                     return; // Exit if location not found
                 }
-            } else {
+            }
+            else
+            {
                 latitude = document.getElementById("latitude").value;
                 longitude = document.getElementById("longitude").value;
             }
@@ -81,27 +116,37 @@
             const startDate = document.getElementById("start_date").value;
             const endDate = document.getElementById("end_date").value;
 
+            // Construct the weather API URL with query parameters
             const url = `http://127.0.0.1:5000/weather?latitude=${latitude}&longitude=${longitude}&start_date=${startDate}&end_date=${endDate}`;
 
-            try {
+            try
+            {
                 const response = await fetch(url);
                 const data = await response.json();
-                if (response.ok) {
+                if (response.ok)
+                {
                     displayWeatherData(data);
-                } else {
+                    displayMap(latitude, longitude);
+                }
+                else
+                {
                     document.getElementById("weatherData").innerText = `Error: ${data.error}`;
                 }
-            } catch (error) {
+            }
+            catch (error)
+            {
                 document.getElementById("weatherData").innerText = `Error: ${error.message}`;
             }
         }
 
-
-        function displayWeatherData(data) {
+        // Function to display the fetched weather data on the page
+        function displayWeatherData(data)
+        {
             const container = document.getElementById("weatherData");
             container.innerHTML = "<h2>Weather Data:</h2>";
 
-            data.forEach(record => {
+            data.forEach(record =>
+            {
                 container.innerHTML += `
                     <p>
                         Date & Time: ${record.datetime} <br>
@@ -113,7 +158,53 @@
             });
         }
 
-        document.getElementById('logout-button').addEventListener('click', () => {
+        // Function to display a Mapbox map centered at the specified latitude and longitude
+        function displayMap(lat, lon)
+        {
+            const map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/streets-v11',
+                center: [lon, lat],
+                zoom: 10
+            });
+
+            // Add a marker at the specified coordinates
+            new mapboxgl.Marker()
+                .setLngLat([lon, lat])
+                .addTo(map);
+        }
+
+        // Function to get the user's current location using the Geolocation API
+        function useMyLocation()
+        {
+            if (navigator.geolocation)
+            {
+                navigator.geolocation.getCurrentPosition(
+                    position =>
+                    {
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+
+                        document.getElementById("latitude").value = latitude;
+                        document.getElementById("longitude").value = longitude;
+                        displayMap(latitude, longitude); // Show map at user's location
+                        fetchWeatherData(); // Fetch weather data for the user's location
+                    },
+                    error =>
+                    {
+                        document.getElementById("weatherData").innerText = "Error: Unable to retrieve location.";
+                    }
+                );
+            }
+            else
+            {
+                document.getElementById("weatherData").innerText = "Geolocation is not supported by this browser.";
+            }
+        }
+
+        // Event listener for the logout button to clear user data and redirect
+        document.getElementById('logout-button').addEventListener('click', () =>
+        {
             localStorage.removeItem('user_id');
             window.location.href = 'login.html';
         });
