@@ -1,0 +1,6 @@
+requests   
+apscheduler
+supabase
+flask
+python-dotenv
+flask-cors

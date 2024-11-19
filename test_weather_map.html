@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Map Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; }
+        #map { height: 400px; margin-top: 20px; }
+        #weatherData { margin-top: 20px; }
+    </style>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css" rel="stylesheet">
+</head>
+<body>
+    <h1>Test Weather Map Integration</h1>
+
+    <form id="weatherForm">
+        <label for="location">Location (City or Address):</label>
+        <input type="text" id="location" placeholder="Enter city or address">
+        <button type="button" onclick="fetchWeatherData()">Get Weather Data</button>
+    </form>
+
+    <div id="weatherData"></div>
+    <div id="map"></div>
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js"></script>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoibWFubnVlbGFkZSIsImEiOiJjbTNjODJqZWQxbWdzMmxzZTJwbzBoeHNxIn0.6cYb5nF7itMY_r9w40Bijw';  // Replace with your Mapbox API key
+
+        // Dummy function to simulate coordinate fetching for testing
+        async function getCoordinates(location) {
+            return { latitude: 48.8566, longitude: 2.3522 }; // Coordinates for Paris, France
+        }
+
+        // Dummy function to simulate fetching weather data for testing
+        async function fetchWeatherData() {
+            const location = document.getElementById("location").value || "Paris, France";
+            const coords = await getCoordinates(location);
+
+            const { latitude, longitude } = coords;
+
+            // Dummy weather data for testing
+            const data = { temperature: 15.5, humidity: 65 };
+            displayWeatherData(data);
+            showWeatherMap(latitude, longitude, data);
+        }
+
+        function displayWeatherData(data) {
+            const container = document.getElementById("weatherData");
+            container.innerHTML = `<h2>Weather Data:</h2>
+                Temperature: ${data.temperature} °C <br>
+                Humidity: ${data.humidity} %`;
+        }
+
+        function showWeatherMap(lat, lon, data) {
+            const map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/streets-v11',
+                center: [lon, lat],
+                zoom: 10
+            });
+
+            // Add a marker with weather data popup
+            new mapboxgl.Marker()
+                .setLngLat([lon, lat])
+                .setPopup(new mapboxgl.Popup().setHTML(`
+                    <h3>Weather Data</h3>
+                    <p>Temperature: ${data.temperature} °C</p>
+                    <p>Humidity: ${data.humidity} %</p>
+                `))
+                .addTo(map);
+        }
+    </script>
+</body>
+</html>
