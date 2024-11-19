@@ -1,4 +1,4 @@
-/* Reset some default styles */
+/* General Reset */
 *,
 *::before,
 *::after {
@@ -7,6 +7,7 @@
     padding: 0;
 }
 
+/* Body Styling */
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f6f9;
@@ -17,11 +18,21 @@ body {
     line-height: 1.6;
 }
 
+/* Header */
 h1 {
-    font-size: 1.8em;
+    font-size: 2em;
     color: #2c3e50;
     margin-bottom: 20px;
     text-align: center;
+}
+
+/* Form Styling */
+form {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
 }
 
 label {
@@ -35,6 +46,7 @@ input[type="text"],
 input[type="email"],
 input[type="password"],
 input[type="date"],
+input[type="number"],
 button {
     width: 100%;
     padding: 10px;
@@ -44,17 +56,21 @@ button {
     font-size: 1em;
 }
 
+/* Button Styling */
 button {
     background-color: #3498db;
     color: #fff;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
     font-weight: bold;
     text-align: center;
+    margin-top: 15px;
+    border: none;
 }
 
 button:hover {
     background-color: #2980b9;
+    transform: translateY(-2px);
 }
 
 button[type="submit"],
@@ -62,20 +78,13 @@ button[type="button"] {
     margin-top: 20px;
 }
 
-form {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-}
-
+/* Weather Data Styling */
 #weatherData,
 table {
     background: #ffffff;
     border-radius: 8px;
     padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     margin-top: 20px;
 }
 
@@ -87,6 +96,7 @@ table td {
     text-align: left;
 }
 
+/* Table Styling */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -106,32 +116,36 @@ table tr:hover {
     background-color: #f1f1f1;
 }
 
+/* Map Styling */
 #map {
     height: 400px;
     margin-top: 20px;
     border-radius: 8px;
 }
 
+/* Logout Button Styling */
 .logout-button {
     display: block;
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     background-color: #e74c3c;
     color: #fff;
     border: none;
     border-radius: 4px;
     font-size: 1em;
     font-weight: bold;
-    margin-top: 10px;
+    margin-top: 15px;
     cursor: pointer;
     text-align: center;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .logout-button:hover {
     background-color: #c0392b;
+    transform: translateY(-2px);
 }
 
+/* Links Styling */
 a {
     color: #3498db;
     text-decoration: none;
@@ -141,19 +155,21 @@ a:hover {
     text-decoration: underline;
 }
 
+/* Paragraph Styling */
 p {
     text-align: center;
 }
 
+/* Responsive Design */
 @media (max-width: 600px) {
     body {
         padding: 15px;
     }
 
     h1 {
-        font-size: 1.5em;
+        font-size: 1.6em;
     }
-    
+
     button,
     input,
     label {
