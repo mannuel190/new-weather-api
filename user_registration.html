@@ -22,8 +22,9 @@
             <!-- Password Input -->
             <div>
                 <label for="password" class="block text-sm font-medium text-gray-700">Password:</label>
-                <input type="password" id="password" name="password" required 
+                <input type="password" id="password" name="password" required minlength="6"
                        class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <small class="text-sm text-gray-500">Password must be at least 6 characters long.</small>
             </div>
 
             <!-- Register Button -->
@@ -52,23 +53,51 @@
         document.getElementById('register-form').addEventListener('submit', async (event) => {
             event.preventDefault();
 
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
 
-            // Insert new user record into the users table
-            const { data, error } = await supabase
-                .from('users')
-                .insert([
-                    { email, password }
-                ]);
+            // Basic input validation
+            if (!validateEmail(email)) {
+                alert("Please enter a valid email address.");
+                return;
+            }
 
-            if (error) {
-                alert("Error registering: " + error.message);
-            } else {
-                alert("Registration successful! Please login.");
-                window.location.href = 'login.html'; // Redirect to login page after successful registration
+            if (password.length < 6) {
+                alert("Password must be at least 6 characters long.");
+                return;
+            }
+
+            try {
+                // Insert new user record into the users table
+                const { data, error } = await supabase
+                    .from('users')
+                    .insert([
+                        { email, password }
+                    ]);
+
+                if (error) {
+                    // Handle different error cases
+                    if (error.message.includes("duplicate key")) {
+                        alert("This email is already registered. Please use a different email.");
+                    } else {
+                        alert("Error registering: " + error.message);
+                    }
+                } else {
+                    alert("Registration successful! Please login.");
+                    window.location.href = 'login.html'; // Redirect to login page after successful registration
+                }
+            } catch (err) {
+                // Handle unexpected errors
+                alert("An unexpected error occurred. Please try again later.");
+                console.error(err);
             }
         });
+
+        // Helper function to validate email format
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
     </script>
 </body>
 </html>
