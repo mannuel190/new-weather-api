@@ -4,61 +4,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Preferences</title>
-    <link rel="stylesheet" href="styles.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>Set Your Preferences</h1>
+<body class="bg-gray-100 font-sans">
+    <div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Set Your Preferences</h1>
 
-    <form id="preferences-form">
-        <input type="hidden" id="pref_id"> <!-- Hidden field to track the preference being edited -->
+        <!-- Preferences Form -->
+        <form id="preferences-form" class="space-y-4">
+            <input type="hidden" id="pref_id"> <!-- Hidden field to track the preference being edited -->
 
-        <label for="location">Location:</label>
-        <input type="text" id="location" name="location" required>
-        <br>
+            <!-- Location Input -->
+            <div>
+                <label for="location" class="block text-sm font-medium text-gray-700">Location:</label>
+                <input type="text" id="location" name="location" required
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
 
-        <label for="latitude">Latitude:</label>
-        <input type="number" step="0.01" id="latitude" name="latitude" readonly required>
-        <br>
+            <!-- Latitude Input -->
+            <div>
+                <label for="latitude" class="block text-sm font-medium text-gray-700">Latitude:</label>
+                <input type="number" step="0.01" id="latitude" name="latitude" readonly required
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md bg-gray-100">
+            </div>
 
-        <label for="longitude">Longitude:</label>
-        <input type="number" step="0.01" id="longitude" name="longitude" readonly required>
-        <br>
+            <!-- Longitude Input -->
+            <div>
+                <label for="longitude" class="block text-sm font-medium text-gray-700">Longitude:</label>
+                <input type="number" step="0.01" id="longitude" name="longitude" readonly required
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md bg-gray-100">
+            </div>
 
-        <label for="temp_min">Minimum Temperature (°C):</label>
-        <input type="number" id="temp_min" name="temp_min" required>
-        <br>
+            <!-- Temperature Inputs -->
+            <div>
+                <label for="temp_min" class="block text-sm font-medium text-gray-700">Minimum Temperature (°C):</label>
+                <input type="number" id="temp_min" name="temp_min" required
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <div>
+                <label for="temp_max" class="block text-sm font-medium text-gray-700">Maximum Temperature (°C):</label>
+                <input type="number" id="temp_max" name="temp_max" required
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
 
-        <label for="temp_max">Maximum Temperature (°C):</label>
-        <input type="number" id="temp_max" name="temp_max" required>
-        <br>
+            <!-- Humidity Inputs -->
+            <div>
+                <label for="humidity_min" class="block text-sm font-medium text-gray-700">Minimum Humidity (%):</label>
+                <input type="number" id="humidity_min" name="humidity_min" required
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <div>
+                <label for="humidity_max" class="block text-sm font-medium text-gray-700">Maximum Humidity (%):</label>
+                <input type="number" id="humidity_max" name="humidity_max" required
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
 
-        <label for="humidity_min">Minimum Humidity (%):</label>
-        <input type="number" id="humidity_min" name="humidity_min" required>
-        <br>
+            <!-- Save Button -->
+            <button type="submit" id="save-button"
+                class="w-full px-4 py-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700">
+                Save Preferences
+            </button>
+        </form>
 
-        <label for="humidity_max">Maximum Humidity (%):</label>
-        <input type="number" id="humidity_max" name="humidity_max" required>
-        <br>
+        <!-- Saved Preferences Table -->
+        <h2 class="text-xl font-semibold text-gray-800 mt-8 mb-4">Saved Preferences</h2>
+        <div class="overflow-x-auto">
+            <table id="preferences-table" class="table-auto w-full border-collapse border border-gray-200">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="border border-gray-300 px-4 py-2">Location</th>
+                        <th class="border border-gray-300 px-4 py-2">Latitude</th>
+                        <th class="border border-gray-300 px-4 py-2">Longitude</th>
+                        <th class="border border-gray-300 px-4 py-2">Temp Min</th>
+                        <th class="border border-gray-300 px-4 py-2">Temp Max</th>
+                        <th class="border border-gray-300 px-4 py-2">Humidity Min</th>
+                        <th class="border border-gray-300 px-4 py-2">Humidity Max</th>
+                        <th class="border border-gray-300 px-4 py-2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
 
-        <button type="submit" id="save-button">Save Preferences</button>
-    </form>
-
-    <h2>Saved Preferences</h2>
-    <table border="1" id="preferences-table">
-        <tr>
-            <th>Location</th>
-            <th>Latitude</th>
-            <th>Longitude</th>
-            <th>Temp Min</th>
-            <th>Temp Max</th>
-            <th>Humidity Min</th>
-            <th>Humidity Max</th>
-            <th>Actions</th>
-        </tr>
-    </table>
-
-    <!-- Logout Button -->
-    <button id="logout-button">Logout</button>
+        <!-- Logout Button -->
+        <button id="logout-button"
+            class="mt-6 w-full px-4 py-2 bg-red-600 text-white rounded-md shadow-md hover:bg-red-700">
+            Logout
+        </button>
+    </div>
 
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
@@ -67,16 +102,13 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3dWFtdXpjYnNya21wamtyZG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAxNDE0MDIsImV4cCI6MjA0NTcxNzQwMn0.SPo5KG3ufHN0dt4Jxvl-sAJ9tZanRA9G1JxGHFrLOBc';
         const supabase = createClient(supabaseUrl, supabaseKey);
 
-        // Initialize isEditing as false
         let isEditing = false;
 
         async function getCoordinates(location) {
             const geocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${location}&key=3935ede2f1d745c896731b673f7fc90b`;
-
             try {
                 const response = await fetch(geocodeUrl);
                 const data = await response.json();
-
                 if (data.results.length > 0) {
                     const { lat, lng } = data.results[0].geometry;
                     return { latitude: lat, longitude: lng };
@@ -90,7 +122,6 @@
 
         document.getElementById('preferences-form').addEventListener('submit', async (event) => {
             event.preventDefault();
-
             const location = document.getElementById('location').value;
             const temp_min = document.getElementById('temp_min').value;
             const temp_max = document.getElementById('temp_max').value;
@@ -99,7 +130,6 @@
             const pref_id = document.getElementById('pref_id').value;
             const user_id = localStorage.getItem('user_id');
 
-            // Resolve coordinates
             const { latitude, longitude } = await getCoordinates(location);
             if (latitude && longitude) {
                 document.getElementById('latitude').value = latitude;
@@ -122,7 +152,6 @@
                     const { error } = await supabase
                         .from('user_preferences')
                         .insert([{ user_id, location, latitude, longitude, temp_min, temp_max, humidity_min, humidity_max, deleted: false }]);
-                    
                     if (error) {
                         alert("Error saving preferences: " + error.message);
                     } else {
@@ -151,32 +180,27 @@
                 return;
             }
 
-            const table = document.getElementById('preferences-table');
-
-            while (table.rows.length > 1) {
-                table.deleteRow(1);
-            }
+            const tbody = document.querySelector('#preferences-table tbody');
+            tbody.innerHTML = '';
 
             data.forEach(preference => {
-                const row = table.insertRow();
-                row.insertCell(0).textContent = preference.location;
-                row.insertCell(1).textContent = preference.latitude;
-                row.insertCell(2).textContent = preference.longitude;
-                row.insertCell(3).textContent = preference.temp_min;
-                row.insertCell(4).textContent = preference.temp_max;
-                row.insertCell(5).textContent = preference.humidity_min;
-                row.insertCell(6).textContent = preference.humidity_max;
-
-                const editCell = row.insertCell(7);
-                const editButton = document.createElement('button');
-                editButton.textContent = 'Edit';
-                editButton.onclick = () => editPreference(preference);
-                editCell.appendChild(editButton);
-
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Delete';
-                deleteButton.onclick = () => deletePreference(preference.pref_id);
-                editCell.appendChild(deleteButton);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="border border-gray-300 px-4 py-2">${preference.location}</td>
+                    <td class="border border-gray-300 px-4 py-2">${preference.latitude}</td>
+                    <td class="border border-gray-300 px-4 py-2">${preference.longitude}</td>
+                    <td class="border border-gray-300 px-4 py-2">${preference.temp_min}</td>
+                    <td class="border border-gray-300 px-4 py-2">${preference.temp_max}</td>
+                    <td class="border border-gray-300 px-4 py-2">${preference.humidity_min}</td>
+                    <td class="border border-gray-300 px-4 py-2">${preference.humidity_max}</td>
+                    <td class="border border-gray-300 px-4 py-2">
+                        <button class="px-2 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600" onclick="editPreference(${JSON.stringify(preference)})">Edit</button>
+                        <br>
+                        <br>
+                        <button class="px-2 py-1 bg-red-500 text-white rounded-md hover:bg-red-600" onclick="deletePreference(${preference.pref_id})">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
             });
         }
 

@@ -55,6 +55,9 @@
         <!-- Map Display -->
         <div id="map" class="mt-6 rounded-lg shadow-md" style="height: 400px;"></div>
 
+        <br>
+        <br>
+
         <!-- User Preferences and Logout -->
         <div class="flex justify-between mt-6">
             <button type="button" onclick="window.location.href='user_preferences.html'" 
@@ -155,15 +158,21 @@
         }
 
         // Function to display a Mapbox map
-        function displayMap(lat, lon) {
-            const map = new mapboxgl.Map({
-                container: 'map',
-                style: 'mapbox://styles/mapbox/streets-v11',
-                center: [lon, lat],
-                zoom: 10
-            });
-            new mapboxgl.Marker().setLngLat([lon, lat]).addTo(map);
-        }
+function displayMap(lat, lon) {
+    // Clear any existing map instance by resetting the container's innerHTML
+    const mapContainer = document.getElementById('map');
+    mapContainer.innerHTML = '';
+
+    // Initialize the map
+    const map = new mapboxgl.Map({
+        container: 'map', // The container ID
+        style: 'mapbox://styles/mapbox/streets-v11', // Map style
+        center: [lon, lat], // Initial map center
+        zoom: 10 // Initial zoom level
+    });
+
+    
+}
 
         // Function to use current location
         function useMyLocation() {
