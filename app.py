@@ -16,9 +16,9 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 def login_page():
     return render_template('login.html')  # Ensure login.html is in the templates folder
 
-@app.route("/user_registration.html")
+@app.route("/register")
 def registration_page():
-    return render_template('user_registration.html')  # Ensure login.html is in the templates folder
+    return render_template('user_registration.html')  # Ensure user_registration.html is in the templates folder
 
 def fetch_weather_data(latitude, longitude, start_date, end_date):
     URL = f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&start_date={start_date}&end_date={end_date}&hourly=temperature_2m,relative_humidity_2m"
