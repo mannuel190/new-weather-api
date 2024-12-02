@@ -125,7 +125,7 @@
 
             const startDate = document.getElementById("start_date").value;
             const endDate = document.getElementById("end_date").value;
-            const url = `http://127.0.0.1:5001/weather?latitude=${latitude}&longitude=${longitude}&start_date=${startDate}&end_date=${endDate}`;
+            const url = `http://127.0.0.1:5000/weather?latitude=${latitude}&longitude=${longitude}&start_date=${startDate}&end_date=${endDate}`;
 
             try {
                 const response = await fetch(url);
