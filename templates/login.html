@@ -85,7 +85,7 @@
                     const userId = data[0].id;
                     localStorage.setItem('user_id', userId); // Store user ID in localStorage
                     alert('Login successful!');
-                    window.location.href = 'fetch_weather.html'; // Redirect to the weather page on success
+                    window.location.href = '/fetch_weather'; // Redirect to the weather page on success
                 }
             } catch (error) {
                 // Handle unexpected errors
