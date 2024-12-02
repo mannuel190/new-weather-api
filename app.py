@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+
 from flask import Flask, jsonify, request, render_template  # Import render_template
 from supabase import create_client, Client
 from flask_cors import CORS
