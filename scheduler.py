@@ -2,13 +2,12 @@
 
 import json
 import requests
-import time
 import traceback
 from supabase import create_client, Client
 
 # Supabase configuration
 supabase_url = 'https://ewuamuzcbsrkmpjkrdmn.supabase.co'
-supabase_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3dWFtdXpjYnNya21wamtyZG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAxNDE0MDIsImV4cCI6MjA0NTcxNzQwMn0.SPo5KG3ufHN0dt4Jxvl-sAJ9tZanRA9G1JxGHFrLOBc'
+supabase_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3dWFtdXpjYnNya21wamtyZG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAxNDE0MDIsImV4cCI6MjA0NTcxNzQwMn0.SPo5KG3ufHN0dt4Jxvl-sAJ9G1JxGHFrLOBc'
 supabase: Client = create_client(supabase_url, supabase_key)
 
 # Slack webhook URL (replace with your actual Slack Webhook URL)
@@ -51,9 +50,13 @@ def fetch_weather_data(latitude, longitude):
         return None, None
 
 def check_preferences():
-    """Check user preferences against current weather conditions and send alerts."""
+    """
+    Check user preferences against current weather conditions and send alerts.
+    Ensures no duplicate alerts are sent during the same run.
+    """
     preferences = fetch_user_preferences()
-    
+    alerts_sent = set()  # Track sent alerts
+
     for pref in preferences:
         # Extract preference details
         pref_id = pref['pref_id']
@@ -69,9 +72,13 @@ def check_preferences():
         longitude = pref['longitude']
         temp, humidity = fetch_weather_data(latitude, longitude)
 
+        # Generate unique keys for temperature and humidity alerts
+        temp_alert_key = f"temp-{pref_id}"
+        humidity_alert_key = f"humidity-{pref_id}"
+
         # Check temperature range and send alert if out of bounds
         if temp is not None:
-            if temp < temp_min or temp > temp_max:
+            if (temp < temp_min or temp > temp_max) and temp_alert_key not in alerts_sent:
                 alert_message = (
                     f"Alert for user {user_id}, preference {pref_id}: "
                     f"Temperature {temp}°C is outside preferred range ({temp_min}°C - {temp_max}°C) "
@@ -79,14 +86,13 @@ def check_preferences():
                 )
                 print(alert_message)
                 send_slack_alert(alert_message)
+                alerts_sent.add(temp_alert_key)  # Mark alert as sent
         else:
             print(f"Temperature data unavailable for preference {pref_id} at location '{location}'.")
 
-        time.sleep(15)
-
         # Check humidity range and send alert if out of bounds
         if humidity is not None:
-            if humidity < humidity_min or humidity > humidity_max:
+            if (humidity < humidity_min or humidity > humidity_max) and humidity_alert_key not in alerts_sent:
                 alert_message = (
                     f"Alert for user {user_id}, preference {pref_id}: "
                     f"Humidity {humidity}% is outside preferred range ({humidity_min}% - {humidity_max}%) "
@@ -94,9 +100,9 @@ def check_preferences():
                 )
                 print(alert_message)
                 send_slack_alert(alert_message)
+                alerts_sent.add(humidity_alert_key)  # Mark alert as sent
         else:
             print(f"Humidity data unavailable for preference {pref_id} at location '{location}'.")
-        time.sleep(15)
 
 if __name__ == "__main__":
     """Run the preference check once."""
