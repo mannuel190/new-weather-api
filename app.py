@@ -25,15 +25,15 @@ def registration_page():
 
 @app.route("/fetch_weather")
 def weather_page():
-    return render_template('fetch_weather.html') 
+    return render_template('fetch_weather.html')
 
 @app.route("/preferences")
 def preferences_page():
-    return render_template('user_preferences.html')  
+    return render_template('user_preferences.html')
 
 def fetch_weather_data(latitude, longitude, start_date, end_date):
     URL = f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&start_date={start_date}&end_date={end_date}&hourly=temperature_2m,relative_humidity_2m"
-    
+
     response = requests.get(URL)
     response.raise_for_status()
     data = response.json()
@@ -73,4 +73,4 @@ def weather_endpoint():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(debug=True)  # Run the app on port 5001
+    app.run(debug=True, port=5001)  # Run the app on port 5001

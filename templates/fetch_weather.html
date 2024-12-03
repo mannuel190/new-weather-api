@@ -11,12 +11,12 @@
 <body class="bg-gray-100 font-sans">
     <div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
         <h1 class="text-2xl font-bold text-gray-800 mb-4">Weather Data Request</h1>
-        
+
         <form id="weatherForm" class="space-y-4">
             <!-- Location Input -->
             <div>
                 <label for="location" class="block text-sm font-medium text-gray-700">Location (City or Address):</label>
-                <input type="text" id="location" name="location" placeholder="Enter city or address" 
+                <input type="text" id="location" name="location" placeholder="Enter city or address"
                        class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
             </div>
 
@@ -27,22 +27,22 @@
             <!-- Date Inputs -->
             <div>
                 <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date (YYYY-MM-DD):</label>
-                <input type="date" id="start_date" name="start_date" 
+                <input type="date" id="start_date" name="start_date"
                        class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
             </div>
             <div>
                 <label for="end_date" class="block text-sm font-medium text-gray-700">End Date (YYYY-MM-DD):</label>
-                <input type="date" id="end_date" name="end_date" 
+                <input type="date" id="end_date" name="end_date"
                        class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
             </div>
 
             <!-- Buttons -->
             <div class="flex space-x-4">
-                <button type="button" onclick="fetchWeatherData()" 
+                <button type="button" onclick="fetchWeatherData()"
                         class="px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700">
                     Get Weather Data
                 </button>
-                <button type="button" onclick="useMyLocation()" 
+                <button type="button" onclick="useMyLocation()"
                         class="px-4 py-2 bg-green-600 text-white rounded-md shadow hover:bg-green-700">
                     Use My Location
                 </button>
@@ -60,11 +60,11 @@
 
         <!-- User Preferences and Logout -->
         <div class="flex justify-between mt-6">
-            <button type="button" onclick="window.location.href='/preferences'" 
+            <button type="button" onclick="window.location.href='/preferences'"
                     class="px-4 py-2 bg-yellow-600 text-white rounded-md shadow hover:bg-yellow-700">
                 Change User Preferences
             </button>
-            <button id="logout-button" 
+            <button id="logout-button"
                     class="px-4 py-2 bg-red-600 text-white rounded-md shadow hover:bg-red-700">
                 Logout
             </button>
@@ -125,7 +125,7 @@
 
             const startDate = document.getElementById("start_date").value;
             const endDate = document.getElementById("end_date").value;
-            const url = `http://127.0.0.1:5000/weather?latitude=${latitude}&longitude=${longitude}&start_date=${startDate}&end_date=${endDate}`;
+            const url = `https://emmanuelade.pythonanywhere.com/weather?latitude=${latitude}&longitude=${longitude}&start_date=${startDate}&end_date=${endDate}`;
 
             try {
                 const response = await fetch(url);
@@ -171,7 +171,7 @@ function displayMap(lat, lon) {
         zoom: 10 // Initial zoom level
     });
 
-    
+
 }
 
         // Function to use current location
