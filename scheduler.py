@@ -4,9 +4,7 @@ import json
 import requests
 import time
 import traceback
-from apscheduler.schedulers.blocking import BlockingScheduler
 from supabase import create_client, Client
-import os
 
 # Supabase configuration
 supabase_url = 'https://ewuamuzcbsrkmpjkrdmn.supabase.co'
@@ -17,23 +15,17 @@ supabase: Client = create_client(supabase_url, supabase_key)
 slack_webhook_url = "https://hooks.slack.com/services/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"
 
 def send_slack_alert(message):
-    """
-    Sends an alert message to Slack using a webhook.
-    Used to notify users of weather conditions outside preferences.
-    """
+    """Send an alert message to Slack using a webhook."""
     payload = {"text": message}
     try:
         response = requests.post(slack_webhook_url, json=payload)
-        response.raise_for_status()  # Raise exception if request fails
+        response.raise_for_status()
         print("Slack notification sent.")
     except Exception as e:
         print("Failed to send Slack notification:", e)
 
 def fetch_user_preferences():
-    """
-    Fetch user preferences from the Supabase database.
-    Returns preferences marked as not deleted.
-    """
+    """Fetch user preferences from the Supabase database."""
     try:
         response = supabase.table('user_preferences').select("*").eq('deleted', False).execute()
         return response.data if response.data else []
@@ -42,17 +34,13 @@ def fetch_user_preferences():
         return []
 
 def fetch_weather_data(latitude, longitude):
-    """
-    Fetch current weather data from Open-Meteo API for the given coordinates.
-    Parses temperature and humidity from the response.
-    """
+    """Fetch current weather data for the given location using Open-Meteo API."""
     url = f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&current=temperature_2m,relative_humidity_2m"
     try:
         response = requests.get(url)
-        response.raise_for_status()  # Raise exception if API call fails
+        response.raise_for_status()
         data = response.json()
-        
-        # Extract temperature and humidity
+
         temp = data['current'].get('temperature_2m')
         humidity = data['current'].get('relative_humidity_2m')
 
@@ -63,14 +51,11 @@ def fetch_weather_data(latitude, longitude):
         return None, None
 
 def check_preferences():
-    """
-    Check user preferences against current weather conditions.
-    Sends Slack alerts for any out-of-range conditions.
-    """
+    """Check user preferences against current weather conditions and send alerts."""
     preferences = fetch_user_preferences()
     
     for pref in preferences:
-        # Extract user preference details
+        # Extract preference details
         pref_id = pref['pref_id']
         user_id = pref['user_id']
         location = pref.get('location', 'Unknown location')
@@ -79,12 +64,12 @@ def check_preferences():
         humidity_min = pref['humidity_min']
         humidity_max = pref['humidity_max']
 
-        # Fetch weather data for the given coordinates
+        # Fetch current weather for this location's coordinates
         latitude = pref['latitude']
         longitude = pref['longitude']
         temp, humidity = fetch_weather_data(latitude, longitude)
 
-        # Check temperature range and alert if out of bounds
+        # Check temperature range and send alert if out of bounds
         if temp is not None:
             if temp < temp_min or temp > temp_max:
                 alert_message = (
@@ -97,9 +82,9 @@ def check_preferences():
         else:
             print(f"Temperature data unavailable for preference {pref_id} at location '{location}'.")
 
-        time.sleep(15)  # Delay to prevent rate-limiting issues
+        time.sleep(15)
 
-        # Check humidity range and alert if out of bounds
+        # Check humidity range and send alert if out of bounds
         if humidity is not None:
             if humidity < humidity_min or humidity > humidity_max:
                 alert_message = (
@@ -111,42 +96,12 @@ def check_preferences():
                 send_slack_alert(alert_message)
         else:
             print(f"Humidity data unavailable for preference {pref_id} at location '{location}'.")
-        time.sleep(15)  # Delay to prevent rate-limiting issues
-
-def schedule_checks():
-    """
-    Schedule regular checks for user preferences every hour.
-    Runs an immediate check on startup for initial feedback.
-    """
-    scheduler = BlockingScheduler()
-    
-    # Schedule the job to check preferences every hour
-    scheduler.add_job(check_preferences, 'interval', hours=1)
-
-    # Run an initial check immediately
-    try:
-        print("Running initial check...")
-        check_preferences()
-    except Exception as e:
-        print("Error during initial check:", e)
-        traceback.print_exc()
-
-    # Start the scheduler
-    try:
-        print("Starting scheduler...")
-        scheduler.start()
-    except Exception as e:
-        print("Error starting scheduler:", e)
-        traceback.print_exc()
+        time.sleep(15)
 
 if __name__ == "__main__":
-    """
-    Entry point for the script.
-    Initializes and starts the preference check scheduler.
-    """
+    """Run the preference check once."""
     try:
-        schedule_checks()
+        check_preferences()
     except Exception as e:
         print("Unexpected error in main:", e)
         traceback.print_exc()
-        time.sleep(10)  # Delay to allow the error to be visible before exit
