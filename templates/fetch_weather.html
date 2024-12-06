@@ -5,77 +5,110 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather Data</title>
 
-    <!-- Tailwind CSS -->
+    <!-- Import Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 font-sans">
     <div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
         <h1 class="text-2xl font-bold text-gray-800 mb-4">Weather Data Request</h1>
 
+        <!-- Form for weather data input -->
         <form id="weatherForm" class="space-y-4">
-            <!-- Location Input -->
+            <!-- Input field for location -->
             <div>
-                <label for="location" class="block text-sm font-medium text-gray-700">Location (City or Address):</label>
-                <input type="text" id="location" name="location" placeholder="Enter city or address"
-                       class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <label for="location" class="block text-sm font-medium text-gray-700">
+                    Location (City or Address):
+                </label>
+                <input 
+                    type="text" 
+                    id="location" 
+                    name="location" 
+                    placeholder="Enter city or address"
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                >
             </div>
 
-            <!-- Hidden latitude and longitude fields -->
+            <!-- Hidden fields for latitude and longitude -->
             <input type="text" id="latitude" name="latitude" hidden>
             <input type="text" id="longitude" name="longitude" hidden>
 
-            <!-- Date Inputs -->
+            <!-- Input fields for start and end dates -->
             <div>
-                <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date (YYYY-MM-DD):</label>
-                <input type="date" id="start_date" name="start_date"
-                       class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                <label for="start_date" class="block text-sm font-medium text-gray-700">
+                    Start Date (YYYY-MM-DD):
+                </label>
+                <input 
+                    type="date" 
+                    id="start_date" 
+                    name="start_date"
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" 
+                    required
+                >
             </div>
             <div>
-                <label for="end_date" class="block text-sm font-medium text-gray-700">End Date (YYYY-MM-DD):</label>
-                <input type="date" id="end_date" name="end_date"
-                       class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                <label for="end_date" class="block text-sm font-medium text-gray-700">
+                    End Date (YYYY-MM-DD):
+                </label>
+                <input 
+                    type="date" 
+                    id="end_date" 
+                    name="end_date"
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" 
+                    required
+                >
             </div>
 
-            <!-- Buttons -->
+            <!-- Buttons for fetching data and using geolocation -->
             <div class="flex space-x-4">
-                <button type="button" onclick="fetchWeatherData()"
-                        class="px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700">
+                <button 
+                    type="button" 
+                    onclick="fetchWeatherData()"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700"
+                >
                     Get Weather Data
                 </button>
-                <button type="button" onclick="useMyLocation()"
-                        class="px-4 py-2 bg-green-600 text-white rounded-md shadow hover:bg-green-700">
+                <button 
+                    type="button" 
+                    onclick="useMyLocation()"
+                    class="px-4 py-2 bg-green-600 text-white rounded-md shadow hover:bg-green-700"
+                >
                     Use My Location
                 </button>
             </div>
         </form>
 
-        <!-- Weather Data Display -->
+        <!-- Section for displaying weather data -->
         <div id="weatherData" class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-300 shadow-md"></div>
 
-        <!-- Map Display -->
+        <!-- Section for map display -->
         <div id="map" class="mt-6 rounded-lg shadow-md" style="height: 400px;"></div>
 
-        <br>
-        <br>
-
-        <!-- User Preferences and Logout -->
+        <!-- User preferences and logout buttons -->
         <div class="flex justify-between mt-6">
-            <button type="button" onclick="window.location.href='/preferences'"
-                    class="px-4 py-2 bg-yellow-600 text-white rounded-md shadow hover:bg-yellow-700">
+            <button 
+                type="button" 
+                onclick="window.location.href='/preferences'"
+                class="px-4 py-2 bg-yellow-600 text-white rounded-md shadow hover:bg-yellow-700"
+            >
                 Change User Preferences
             </button>
-            <button id="logout-button"
-                    class="px-4 py-2 bg-red-600 text-white rounded-md shadow hover:bg-red-700">
+            <button 
+                id="logout-button"
+                class="px-4 py-2 bg-red-600 text-white rounded-md shadow hover:bg-red-700"
+            >
                 Logout
             </button>
         </div>
     </div>
 
-    <!-- Mapbox JS -->
+    <!-- Import Mapbox JS -->
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js"></script>
     <script>
-        // Function to set the default dates to today's date
-        function setDefaultDates() {
+        /**
+         * Set the default dates to today's date
+         */
+        function setDefaultDates()
+        {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('start_date').value = today;
             document.getElementById('end_date').value = today;
@@ -87,38 +120,59 @@
         // Set the Mapbox API access token
         mapboxgl.accessToken = 'pk.eyJ1IjoibWFubnVlbGFkZSIsImEiOiJjbTNjODJqZWQxbWdzMmxzZTJwbzBoeHNxIn0.6cYb5nF7itMY_r9w40Bijw';
 
-        // Function to get latitude and longitude based on user-input location
-        async function getCoordinates(location) {
+        /**
+         * Fetch latitude and longitude for a given location
+         * @param {string} location - The user-input location
+         */
+        async function getCoordinates(location)
+        {
             const geocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${location}&key=3935ede2f1d745c896731b673f7fc90b`;
-            try {
+            try 
+            {
                 const response = await fetch(geocodeUrl);
                 const data = await response.json();
-                if (data.results.length > 0) {
+
+                if (data.results.length > 0) 
+                {
                     const { lat, lng } = data.results[0].geometry;
                     return { latitude: lat, longitude: lng };
-                } else {
+                } 
+                else 
+                {
                     throw new Error("Location not found.");
                 }
-            } catch (error) {
+            } 
+            catch (error) 
+            {
                 document.getElementById("weatherData").innerText = `Geocoding Error: ${error.message}`;
             }
         }
 
-        // Function to fetch weather data
-        async function fetchWeatherData() {
+        /**
+         * Fetch weather data for the specified parameters
+         */
+        async function fetchWeatherData()
+        {
             const location = document.getElementById("location").value;
             let latitude, longitude;
-            if (location) {
+
+            if (location) 
+            {
                 const coords = await getCoordinates(location);
-                if (coords) {
+                if (coords) 
+                {
                     latitude = coords.latitude;
                     longitude = coords.longitude;
                     document.getElementById("latitude").value = latitude;
                     document.getElementById("longitude").value = longitude;
-                } else {
+                } 
+                else 
+                {
                     return;
                 }
-            } else {
+            } 
+            else 
+            {
                 latitude = document.getElementById("latitude").value;
                 longitude = document.getElementById("longitude").value;
             }
@@ -127,25 +181,38 @@
             const endDate = document.getElementById("end_date").value;
             const url = `https://emmanuelade.pythonanywhere.com/weather?latitude=${latitude}&longitude=${longitude}&start_date=${startDate}&end_date=${endDate}`;
 
-            try {
+            try 
+            {
                 const response = await fetch(url);
                 const data = await response.json();
-                if (response.ok) {
+
+                if (response.ok) 
+                {
                     displayWeatherData(data);
                     displayMap(latitude, longitude);
-                } else {
+                } 
+                else 
+                {
                     document.getElementById("weatherData").innerText = `Error: ${data.error}`;
                 }
-            } catch (error) {
+            } 
+            catch (error) 
+            {
                 document.getElementById("weatherData").innerText = `Error: ${error.message}`;
             }
         }
 
-        // Function to display the fetched weather data
-        function displayWeatherData(data) {
+        /**
+         * Display the fetched weather data
+         * @param {Array} data - Array of weather records
+         */
+        function displayWeatherData(data)
+        {
             const container = document.getElementById("weatherData");
             container.innerHTML = "<h2 class='text-xl font-semibold'>Weather Data:</h2>";
-            data.forEach(record => {
+
+            data.forEach(record =>
+            {
                 container.innerHTML += `
                     <div class="my-4">
                         <p class="text-sm"><strong>Date & Time:</strong> ${record.datetime}</p>
@@ -157,46 +224,58 @@
             });
         }
 
-        // Function to display a Mapbox map
-function displayMap(lat, lon) {
-    // Clear any existing map instance by resetting the container's innerHTML
-    const mapContainer = document.getElementById('map');
-    mapContainer.innerHTML = '';
+        /**
+         * Display a Mapbox map at the specified coordinates
+         * @param {number} lat - Latitude of the location
+         * @param {number} lon - Longitude of the location
+         */
+        function displayMap(lat, lon)
+        {
+            const mapContainer = document.getElementById('map');
+            mapContainer.innerHTML = ''; // Clear any existing map instance
 
-    // Initialize the map
-    const map = new mapboxgl.Map({
-        container: 'map', // The container ID
-        style: 'mapbox://styles/mapbox/streets-v11', // Map style
-        center: [lon, lat], // Initial map center
-        zoom: 10 // Initial zoom level
-    });
+            const map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/streets-v11',
+                center: [lon, lat],
+                zoom: 10
+            });
+        }
 
-
-}
-
-        // Function to use current location
-        function useMyLocation() {
-            if (navigator.geolocation) {
+        /**
+         * Use the user's current geolocation
+         */
+        function useMyLocation()
+        {
+            if (navigator.geolocation) 
+            {
                 navigator.geolocation.getCurrentPosition(
-                    position => {
+                    position => 
+                    {
                         const latitude = position.coords.latitude;
                         const longitude = position.coords.longitude;
+
                         document.getElementById("latitude").value = latitude;
                         document.getElementById("longitude").value = longitude;
+
                         displayMap(latitude, longitude);
                         fetchWeatherData();
                     },
-                    error => {
+                    error => 
+                    {
                         document.getElementById("weatherData").innerText = "Error: Unable to retrieve location.";
                     }
                 );
-            } else {
+            } 
+            else 
+            {
                 document.getElementById("weatherData").innerText = "Geolocation is not supported by this browser.";
             }
         }
 
-        // Logout button event
-        document.getElementById('logout-button').addEventListener('click', () => {
+        // Logout and clear session
+        document.getElementById('logout-button').addEventListener('click', () =>
+        {
             localStorage.removeItem('user_id');
             window.location.href = '/';
         });
