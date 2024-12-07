@@ -164,6 +164,15 @@
     </style>
 </head>
 <body>
+    <script>
+        // Check if the user is logged in by verifying localStorage for user_id
+        const userId = localStorage.getItem('user_id');
+        if (!userId) 
+        {
+            alert("You are not logged in. Redirecting to login page...");
+            window.location.href = "/"; // Redirect to login page
+        }
+    </script>
     <h1>Enter Details for Alerts</h1>
 
     <!-- Preferences form -->
