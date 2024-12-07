@@ -114,250 +114,183 @@
     </div>
 
     <!-- Import Mapbox JS -->
-    <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-    
-        // Supabase configuration
-        const supabaseUrl = 'https://ewuamuzcbsrkmpjkrdmn.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3dWFtdXpjYnNya21wamtyZG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAxNDE0MDIsImV4cCI6MjA0NTcxNzQwMn0.SPo5KG3ufHN0dt4Jxvl-sAJ9tZanRA9G1JxGHFrLOBc';
-        const supabase = createClient(supabaseUrl, supabaseKey);
-    
-        let isEditing = false;
-    
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js"></script>
+    <script>
         /**
-         * Function to fetch coordinates for a given location
-         * @param {string} location - The location name
-         * @returns {Promise<Object>} - The latitude and longitude of the location
+         * Set the default dates to today's date
          */
-        async function getCoordinates(location) {
-            const geocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(location)}&key=3935ede2f1d745c896731b673f7fc90b`;
-            try {
+        function setDefaultDates()
+        {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('start_date').value = today;
+            document.getElementById('end_date').value = today;
+        }
+
+        // Set default dates when the page loads
+        document.addEventListener('DOMContentLoaded', setDefaultDates);
+
+        // Set the Mapbox API access token
+        mapboxgl.accessToken = 'pk.eyJ1IjoibWFubnVlbGFkZSIsImEiOiJjbTNjODJqZWQxbWdzMmxzZTJwbzBoeHNxIn0.6cYb5nF7itMY_r9w40Bijw';
+
+        /**
+         * Fetch latitude and longitude for a given location
+         * @param {string} location - The user-input location
+         */
+        async function getCoordinates(location)
+        {
+            const geocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${location}&key=3935ede2f1d745c896731b673f7fc90b`;
+            try 
+            {
                 const response = await fetch(geocodeUrl);
                 const data = await response.json();
-    
-                if (data.results.length > 0) {
+
+                if (data.results.length > 0) 
+                {
                     const { lat, lng } = data.results[0].geometry;
                     return { latitude: lat, longitude: lng };
-                } else {
+                } 
+                else 
+                {
                     throw new Error("Location not found.");
                 }
-            } catch (error) {
-                alert(`Geocoding Error: ${error.message}`);
-                return null;
+            } 
+            catch (error) 
+            {
+                document.getElementById("weatherData").innerText = `Geocoding Error: ${error.message}`;
             }
         }
-    
+
         /**
-         * Function to delete a preference
-         * @param {string} pref_id - The ID of the preference to delete
+         * Fetch weather data for the specified parameters
          */
-        async function deletePreference(pref_id) {
-            if (!confirm('Are you sure you want to delete this preference?')) {
-                return;
-            }
-    
-            try {
-                const { error } = await supabase
-                    .from('user_preferences')
-                    .update({ deleted: true }) // Soft delete by marking as deleted
-                    .eq('pref_id', pref_id);
-    
-                if (error) {
-                    alert(`Error deleting preference: ${error.message}`);
-                } else {
-                    alert('Preference deleted successfully!');
-                    loadPreferences(); // Reload preferences after deletion
-                }
-            } catch (err) {
-                alert(`Unexpected error deleting preference: ${err.message}`);
-            }
-        }
-    
-        /**
-         * Function to edit an existing preference
-         * @param {Object} preference - The preference object to edit
-         */
-        function editPreference(preference) {
-            document.getElementById('pref_id').value = preference.pref_id;
-            document.getElementById('location').value = preference.location;
-            document.getElementById('latitude').value = preference.latitude;
-            document.getElementById('longitude').value = preference.longitude;
-            document.getElementById('temp_min').value = preference.temp_min;
-            document.getElementById('temp_max').value = preference.temp_max;
-            document.getElementById('humidity_min').value = preference.humidity_min;
-            document.getElementById('humidity_max').value = preference.humidity_max;
-    
-            isEditing = true;
-            document.getElementById('save-button').textContent = "Update Preferences";
-        }
-    
-        /**
-         * Function to load preferences from the database
-         */
-        async function loadPreferences() {
-            const user_id = localStorage.getItem('user_id');
-    
-            try {
-                const { data, error } = await supabase
-                    .from('user_preferences')
-                    .select('*')
-                    .eq('user_id', user_id)
-                    .eq('deleted', false);
-    
-                if (error) {
-                    alert(`Error loading preferences: ${error.message}`);
+        async function fetchWeatherData()
+        {
+            const location = document.getElementById("location").value;
+            let latitude, longitude;
+
+            if (location) 
+            {
+                const coords = await getCoordinates(location);
+                if (coords) 
+                {
+                    latitude = coords.latitude;
+                    longitude = coords.longitude;
+                    document.getElementById("latitude").value = latitude;
+                    document.getElementById("longitude").value = longitude;
+                } 
+                else 
+                {
                     return;
                 }
-    
-                const table = document.getElementById('preferences-table');
-                table.innerHTML = ''; // Clear existing rows
-    
-                data.forEach(preference => {
-                    const row = table.insertRow();
-                    row.insertCell(0).textContent = preference.location;
-                    row.insertCell(1).textContent = preference.latitude;
-                    row.insertCell(2).textContent = preference.longitude;
-                    row.insertCell(3).textContent = preference.temp_min;
-                    row.insertCell(4).textContent = preference.temp_max;
-                    row.insertCell(5).textContent = preference.humidity_min;
-                    row.insertCell(6).textContent = preference.humidity_max;
-    
-                    const actionsCell = row.insertCell(7);
-    
-                    const editButton = document.createElement('button');
-                    editButton.textContent = 'Edit';
-                    editButton.className = 'edit-button';
-                    editButton.onclick = () => editPreference(preference);
-                    actionsCell.appendChild(editButton);
-    
-                    const deleteButton = document.createElement('button');
-                    deleteButton.textContent = 'Delete';
-                    deleteButton.className = 'delete-button';
-                    deleteButton.onclick = () => deletePreference(preference.pref_id);
-                    actionsCell.appendChild(deleteButton);
-                });
-            } catch (err) {
-                alert(`Unexpected error loading preferences: ${err.message}`);
+            } 
+            else 
+            {
+                latitude = document.getElementById("latitude").value;
+                longitude = document.getElementById("longitude").value;
+            }
+
+            const startDate = document.getElementById("start_date").value;
+            const endDate = document.getElementById("end_date").value;
+            const url = `https://emmanuelade.pythonanywhere.com/weather?latitude=${latitude}&longitude=${longitude}&start_date=${startDate}&end_date=${endDate}`;
+
+            try 
+            {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (response.ok) 
+                {
+                    displayWeatherData(data);
+                    displayMap(latitude, longitude);
+                } 
+                else 
+                {
+                    document.getElementById("weatherData").innerText = `Error: ${data.error}`;
+                }
+            } 
+            catch (error) 
+            {
+                document.getElementById("weatherData").innerText = `Error: ${error.message}`;
             }
         }
-    
+
         /**
-         * Form submission handler to save or update preferences
+         * Display the fetched weather data
+         * @param {Array} data - Array of weather records
          */
-        document.getElementById('preferences-form').addEventListener('submit', async (event) => {
-            event.preventDefault();
-    
-            const user_id = localStorage.getItem('user_id');
-            if (!user_id) {
-                alert('You are not logged in.');
-                return;
-            }
-    
-            // Collect form data
-            const pref_id = document.getElementById('pref_id').value;
-            const location = document.getElementById('location').value;
-            const temp_min = parseFloat(document.getElementById('temp_min').value);
-            const temp_max = parseFloat(document.getElementById('temp_max').value);
-            const humidity_min = parseFloat(document.getElementById('humidity_min').value);
-            const humidity_max = parseFloat(document.getElementById('humidity_max').value);
-    
-            // Fetch latitude and longitude if not already present
-            let latitude = parseFloat(document.getElementById('latitude').value);
-            let longitude = parseFloat(document.getElementById('longitude').value);
-    
-            if (!latitude || !longitude) {
-                const coordinates = await getCoordinates(location);
-                if (coordinates) {
-                    latitude = coordinates.latitude;
-                    longitude = coordinates.longitude;
-                } else {
-                    alert('Unable to fetch coordinates for the provided location.');
-                    return;
-                }
-            }
-    
-            try {
-                if (isEditing) {
-                    // Update existing preference
-                    const { error } = await supabase
-                        .from('user_preferences')
-                        .update({
-                            location,
-                            latitude,
-                            longitude,
-                            temp_min,
-                            temp_max,
-                            humidity_min,
-                            humidity_max,
-                        })
-                        .eq('pref_id', pref_id)
-                        .eq('user_id', user_id);
-    
-                    if (error) {
-                        alert(`Error updating preference: ${error.message}`);
-                        return;
-                    }
-                    alert('Preference updated successfully!');
-                } else {
-                    // Add new preference
-                    const { error } = await supabase
-                        .from('user_preferences')
-                        .insert([{
-                            user_id,
-                            location,
-                            latitude,
-                            longitude,
-                            temp_min,
-                            temp_max,
-                            humidity_min,
-                            humidity_max,
-                            deleted: false,
-                        }]);
-    
-                    if (error) {
-                        alert(`Error saving preference: ${error.message}`);
-                        return;
-                    }
-                    alert('Preference saved successfully!');
-                }
-    
-                // Reset form and reload preferences
-                resetForm();
-                loadPreferences();
-            } catch (err) {
-                alert(`Unexpected error: ${err.message}`);
-            }
-        });
-    
-        /**
-         * Reset the form to its initial state.
-         */
-        function resetForm() {
-            document.getElementById('pref_id').value = '';
-            document.getElementById('location').value = '';
-            document.getElementById('latitude').value = '';
-            document.getElementById('longitude').value = '';
-            document.getElementById('temp_min').value = '';
-            document.getElementById('temp_max').value = '';
-            document.getElementById('humidity_min').value = '';
-            document.getElementById('humidity_max').value = '';
-            isEditing = false;
-            document.getElementById('save-button').textContent = "Save Preferences";
+        function displayWeatherData(data)
+        {
+            const container = document.getElementById("weatherData");
+            container.innerHTML = "<h2 class='text-xl font-semibold'>Weather Data:</h2>";
+
+            data.forEach(record =>
+            {
+                container.innerHTML += `
+                    <div class="my-4">
+                        <p class="text-sm"><strong>Date & Time:</strong> ${record.datetime}</p>
+                        <p class="text-sm"><strong>Temperature:</strong> ${record.temperature} °C</p>
+                        <p class="text-sm"><strong>Humidity:</strong> ${record.humidity} %</p>
+                        <hr class="my-2">
+                    </div>
+                `;
+            });
         }
-    
-        // Add event listeners for logout and home navigation
-        document.getElementById('logout-button').addEventListener('click', () => {
+
+        /**
+         * Display a Mapbox map at the specified coordinates
+         * @param {number} lat - Latitude of the location
+         * @param {number} lon - Longitude of the location
+         */
+        function displayMap(lat, lon)
+        {
+            const mapContainer = document.getElementById('map');
+            mapContainer.innerHTML = ''; // Clear any existing map instance
+
+            const map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/streets-v11',
+                center: [lon, lat],
+                zoom: 10
+            });
+        }
+
+        /**
+         * Use the user's current geolocation
+         */
+        function useMyLocation()
+        {
+            if (navigator.geolocation) 
+            {
+                navigator.geolocation.getCurrentPosition(
+                    position => 
+                    {
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+
+                        document.getElementById("latitude").value = latitude;
+                        document.getElementById("longitude").value = longitude;
+
+                        displayMap(latitude, longitude);
+                        fetchWeatherData();
+                    },
+                    error => 
+                    {
+                        document.getElementById("weatherData").innerText = "Error: Unable to retrieve location.";
+                    }
+                );
+            } 
+            else 
+            {
+                document.getElementById("weatherData").innerText = "Geolocation is not supported by this browser.";
+            }
+        }
+
+        // Logout and clear session
+        document.getElementById('logout-button').addEventListener('click', () =>
+        {
             localStorage.removeItem('user_id');
             window.location.href = '/';
         });
-    
-        document.getElementById('home-button').addEventListener('click', () => {
-            window.location.href = '/fetch_weather';
-        });
-    
-        // Load preferences when the page loads
-        document.addEventListener('DOMContentLoaded', loadPreferences);
     </script>
-    
 </body>
 </html>

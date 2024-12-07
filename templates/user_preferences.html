@@ -294,6 +294,29 @@
         let isEditing = false;
     
         /**
+         * Function to fetch coordinates for a given location
+         * @param {string} location - The location name
+         * @returns {Promise<Object>} - The latitude and longitude of the location
+         */
+        async function getCoordinates(location) {
+            const geocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(location)}&key=3935ede2f1d745c896731b673f7fc90b`;
+            try {
+                const response = await fetch(geocodeUrl);
+                const data = await response.json();
+    
+                if (data.results.length > 0) {
+                    const { lat, lng } = data.results[0].geometry;
+                    return { latitude: lat, longitude: lng };
+                } else {
+                    throw new Error("Location not found.");
+                }
+            } catch (error) {
+                alert(`Geocoding Error: ${error.message}`);
+                return null;
+            }
+        }
+    
+        /**
          * Function to delete a preference
          * @param {string} pref_id - The ID of the preference to delete
          */
@@ -402,12 +425,25 @@
             // Collect form data
             const pref_id = document.getElementById('pref_id').value;
             const location = document.getElementById('location').value;
-            const latitude = parseFloat(document.getElementById('latitude').value) || null;
-            const longitude = parseFloat(document.getElementById('longitude').value) || null;
             const temp_min = parseFloat(document.getElementById('temp_min').value);
             const temp_max = parseFloat(document.getElementById('temp_max').value);
             const humidity_min = parseFloat(document.getElementById('humidity_min').value);
             const humidity_max = parseFloat(document.getElementById('humidity_max').value);
+    
+            // Fetch latitude and longitude if not already present
+            let latitude = parseFloat(document.getElementById('latitude').value);
+            let longitude = parseFloat(document.getElementById('longitude').value);
+    
+            if (!latitude || !longitude) {
+                const coordinates = await getCoordinates(location);
+                if (coordinates) {
+                    latitude = coordinates.latitude;
+                    longitude = coordinates.longitude;
+                } else {
+                    alert('Unable to fetch coordinates for the provided location.');
+                    return;
+                }
+            }
     
             try {
                 if (isEditing) {
@@ -491,6 +527,7 @@
         // Load preferences when the page loads
         document.addEventListener('DOMContentLoaded', loadPreferences);
     </script>
+    
     
 </body>
 </html>
