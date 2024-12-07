@@ -4,39 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
-    <!-- Tailwind CSS -->
+    <!-- Import Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center h-screen">
     <div class="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
         <h1 class="text-2xl font-bold text-gray-800 text-center mb-6">Register</h1>
 
+        <!-- Registration form -->
         <form id="register-form" class="space-y-4">
-            <!-- Email Input -->
+            <!-- Email input -->
             <div>
-                <label for="email" class="block text-sm font-medium text-gray-700">Email:</label>
-                <input type="email" id="email" name="email" required 
-                       class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <label for="email" class="block text-sm font-medium text-gray-700">
+                    Email:
+                </label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    required 
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                >
             </div>
 
-            <!-- Password Input -->
+            <!-- Password input -->
             <div>
-                <label for="password" class="block text-sm font-medium text-gray-700">Password:</label>
-                <input type="password" id="password" name="password" required minlength="6"
-                       class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                <small class="text-sm text-gray-500">Password must be at least 6 characters long.</small>
+                <label for="password" class="block text-sm font-medium text-gray-700">
+                    Password:
+                </label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    required 
+                    minlength="6"
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                <small class="text-sm text-gray-500">
+                    Password must be at least 6 characters long.
+                </small>
             </div>
 
-            <!-- Register Button -->
+            <!-- Register button -->
             <div>
-                <button type="submit" 
-                        class="w-full px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700">
+                <button 
+                    type="submit" 
+                    class="w-full px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700"
+                >
                     Register
                 </button>
             </div>
         </form>
 
-        <!-- Login Redirect -->
+        <!-- Redirect to login -->
         <p class="text-sm text-gray-600 text-center mt-4">
             Already have an account? 
             <a href="login.html" class="text-blue-600 hover:underline">Login here</a>.
@@ -46,55 +66,76 @@
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
+        // Supabase configuration
         const supabaseUrl = 'https://ewuamuzcbsrkmpjkrdmn.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3dWFtdXpjYnNya21wamtyZG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAxNDE0MDIsImV4cCI6MjA0NTcxNzQwMn0.SPo5KG3ufHN0dt4Jxvl-sAJ9tZanRA9G1JxGHFrLOBc';
         const supabase = createClient(supabaseUrl, supabaseKey);
 
-        document.getElementById('register-form').addEventListener('submit', async (event) => {
-            event.preventDefault();
+        /**
+         * Handle form submission for registration
+         */
+        document.getElementById('register-form').addEventListener('submit', async (event) =>
+        {
+            event.preventDefault(); // Prevent page reload on form submission
 
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
 
             // Basic input validation
-            if (!validateEmail(email)) {
+            if (!validateEmail(email))
+            {
                 alert("Please enter a valid email address.");
                 return;
             }
 
-            if (password.length < 6) {
+            if (password.length < 6)
+            {
                 alert("Password must be at least 6 characters long.");
                 return;
             }
 
-            try {
-                // Insert new user record into the users table
+            try 
+            {
+                // Insert new user record into the Supabase users table
                 const { data, error } = await supabase
                     .from('users')
                     .insert([
                         { email, password }
                     ]);
 
-                if (error) {
-                    // Handle different error cases
-                    if (error.message.includes("duplicate key")) {
+                if (error) 
+                {
+                    // Handle error cases
+                    if (error.message.includes("duplicate key"))
+                    {
                         alert("This email is already registered. Please use a different email.");
-                    } else {
+                    } 
+                    else 
+                    {
                         alert("Error registering: " + error.message);
                     }
-                } else {
+                } 
+                else 
+                {
                     alert("Registration successful! Please login.");
-                    window.location.href = 'login.html'; // Redirect to login page after successful registration
+                    window.location.href = 'login.html'; // Redirect to login page on success
                 }
-            } catch (err) {
+            } 
+            catch (err) 
+            {
                 // Handle unexpected errors
                 alert("An unexpected error occurred. Please try again later.");
                 console.error(err);
             }
         });
 
-        // Helper function to validate email format
-        function validateEmail(email) {
+        /**
+         * Validate email format
+         * @param {string} email - The email address to validate
+         * @returns {boolean} - True if valid, otherwise false
+         */
+        function validateEmail(email)
+        {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return emailRegex.test(email);
         }
