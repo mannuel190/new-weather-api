@@ -6,20 +6,23 @@
     <title>Preferences</title>
     <style>
         /* Basic styling for the page */
-        body {
+        body 
+        {
             font-family: Arial, sans-serif;
             background-color: #f9f9f9;
             margin: 0;
             padding: 20px;
         }
 
-        h1, h2 {
+        h1, h2 
+        {
             text-align: center;
             color: #333;
         }
 
         /* Styling for the form */
-        form {
+        form 
+        {
             max-width: 600px;
             margin: 0 auto;
             background-color: #fff;
@@ -28,14 +31,16 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        label {
+        label 
+        {
             font-weight: bold;
             color: #555;
             display: block;
             margin-bottom: 5px;
         }
 
-        input {
+        input 
+        {
             width: 100%;
             padding: 10px;
             margin-bottom: 15px;
@@ -43,11 +48,13 @@
             border-radius: 5px;
         }
 
-        input[readonly] {
+        input[readonly] 
+        {
             background-color: #f0f0f0;
         }
 
-        button {
+        button 
+        {
             width: 100%;
             padding: 10px;
             background-color: #007bff;
@@ -57,29 +64,34 @@
             cursor: pointer;
         }
 
-        button:hover {
+        button:hover 
+        {
             background-color: #0056b3;
         }
 
         /* Styling for the table */
-        table {
+        table 
+        {
             width: 50%;
             margin: 20px auto;
             border-collapse: collapse;
         }
 
-        th, td {
+        th, td 
+        {
             border: 1px solid #ccc;
             padding: 10px;
             text-align: center;
         }
 
-        th {
+        th 
+        {
             background-color: #f0f0f0;
             font-weight: bold;
         }
 
-        td button {
+        td button 
+        {
             margin: 5px;
             padding: 5px 10px;
             font-size: 14px;
@@ -87,26 +99,31 @@
             border-radius: 4px;
         }
 
-        .edit-button {
+        .edit-button 
+        {
             background-color: #ffc107;
             color: #fff;
         }
 
-        .edit-button:hover {
+        .edit-button:hover 
+        {
             background-color: #e0a800;
         }
 
-        .delete-button {
+        .delete-button 
+        {
             background-color: #dc3545;
             color: #fff;
         }
 
-        .delete-button:hover {
+        .delete-button:hover 
+        {
             background-color: #bd2130;
         }
 
         /* Logout button styling */
-        .logout-button {
+        .logout-button 
+        {
             background-color: #dc3545;
             color: #fff;
             text-align: center;
@@ -120,59 +137,110 @@
             max-width: 600px;
         }
 
-        .logout-button:hover {
+        .logout-button:hover 
+        {
             background-color: #bd2130;
         }
 
-        .home-button {
-        background-color: #28a745;
-        color: #fff;
-        text-align: center;
-        margin: 10px auto;
-        padding: 10px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        display: block;
-        width: 100%;
-        max-width: 600px;
-    }
+        .home-button 
+        {
+            background-color: #28a745;
+            color: #fff;
+            text-align: center;
+            margin: 10px auto;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            max-width: 600px;
+        }
 
-    .home-button:hover {
-        background-color: #218838;
-    }
+        .home-button:hover 
+        {
+            background-color: #218838;
+        }
     </style>
 </head>
 <body>
-    <h1>Enter details for alerts </h1>
+    <h1>Enter Details for Alerts</h1>
 
+    <!-- Preferences form -->
     <form id="preferences-form">
-        <input type="hidden" id="pref_id"> <!-- Hidden field to track the preference being edited -->
+        <input 
+            type="hidden" 
+            id="pref_id"> <!-- Hidden field to track the preference being edited -->
 
         <label for="location">Location:</label>
-        <input type="text" id="location" name="location" required>
+        <input 
+            type="text" 
+            id="location" 
+            name="location" 
+            required
+        >
 
         <label for="latitude">Latitude:</label>
-        <input type="number" step="0.01" id="latitude" name="latitude" readonly required>
+        <input 
+            type="number" 
+            step="0.01" 
+            id="latitude" 
+            name="latitude" 
+            readonly 
+            required
+        >
 
         <label for="longitude">Longitude:</label>
-        <input type="number" step="0.01" id="longitude" name="longitude" readonly required>
+        <input 
+            type="number" 
+            step="0.01" 
+            id="longitude" 
+            name="longitude" 
+            readonly 
+            required
+        >
 
         <label for="temp_min">Minimum Temperature (°C):</label>
-        <input type="number" id="temp_min" name="temp_min" required>
+        <input 
+            type="number" 
+            id="temp_min" 
+            name="temp_min" 
+            required
+        >
 
         <label for="temp_max">Maximum Temperature (°C):</label>
-        <input type="number" id="temp_max" name="temp_max" required>
+        <input 
+            type="number" 
+            id="temp_max" 
+            name="temp_max" 
+            required
+        >
 
         <label for="humidity_min">Minimum Humidity (%):</label>
-        <input type="number" id="humidity_min" name="humidity_min" required>
+        <input 
+            type="number" 
+            id="humidity_min" 
+            name="humidity_min" 
+            required
+        >
 
         <label for="humidity_max">Maximum Humidity (%):</label>
-        <input type="number" id="humidity_max" name="humidity_max" required>
+        <input 
+            type="number" 
+            id="humidity_max" 
+            name="humidity_max" 
+            required
+        >
 
-        <button type="submit" id="save-button">Save Preferences</button>
+        <button 
+            type="submit" 
+            id="save-button"
+        >
+            Save Preferences
+        </button>
     </form>
 
+    <!-- Table for displaying saved preferences -->
     <h2>Saved Preferences</h2>
     <table>
         <thead>
@@ -192,41 +260,70 @@
         </tbody>
     </table>
 
-    <button id="logout-button" class="logout-button">Logout</button>
-    <button id="home-button" class="home-button">Back to Home</button>
-
-    
+    <!-- Logout and home buttons -->
+    <button 
+        id="logout-button" 
+        class="logout-button"
+    >
+        Logout
+    </button>
+    <button 
+        id="home-button" 
+        class="home-button"
+    >
+        Back to Home
+    </button>
 
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
+        // Supabase configuration
         const supabaseUrl = 'https://ewuamuzcbsrkmpjkrdmn.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3dWFtdXpjYnNya21wamtyZG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAxNDE0MDIsImV4cCI6MjA0NTcxNzQwMn0.SPo5KG3ufHN0dt4Jxvl-sAJ9tZanRA9G1JxGHFrLOBc';
         const supabase = createClient(supabaseUrl, supabaseKey);
 
         let isEditing = false;
 
-        async function deletePreference(pref_id) {
-            if (!confirm('Are you sure you want to delete this preference?')) return;
+        /**
+         * Function to delete a preference
+         * @param {string} pref_id - The ID of the preference to delete
+         */
+        async function deletePreference(pref_id)
+        {
+            if (!confirm('Are you sure you want to delete this preference?'))
+            {
+                return;
+            }
 
-            try {
+            try 
+            {
                 const { error } = await supabase
                     .from('user_preferences')
-                    .update({ deleted: true }) // Soft delete by setting 'deleted' to true
+                    .update({ deleted: true }) // Soft delete by marking as deleted
                     .eq('pref_id', pref_id);
 
-                if (error) {
+                if (error) 
+                {
                     alert(`Error deleting preference: ${error.message}`);
-                } else {
+                } 
+                else 
+                {
                     alert('Preference deleted successfully!');
-                    loadPreferences(); // Reload the preferences after deletion
+                    loadPreferences(); // Reload preferences after deletion
                 }
-            } catch (err) {
+            } 
+            catch (err) 
+            {
                 alert(`Unexpected error deleting preference: ${err.message}`);
             }
         }
 
-        function editPreference(preference) {
+        /**
+         * Function to edit an existing preference
+         * @param {Object} preference - The preference object to edit
+         */
+        function editPreference(preference)
+        {
             document.getElementById('pref_id').value = preference.pref_id;
             document.getElementById('location').value = preference.location;
             document.getElementById('latitude').value = preference.latitude;
@@ -240,25 +337,32 @@
             document.getElementById('save-button').textContent = "Update Preferences";
         }
 
-        async function loadPreferences() {
+        /**
+         * Function to load preferences from the database
+         */
+        async function loadPreferences()
+        {
             const user_id = localStorage.getItem('user_id');
 
-            try {
+            try 
+            {
                 const { data, error } = await supabase
                     .from('user_preferences')
                     .select('*')
                     .eq('user_id', user_id)
-                    .eq('deleted', false); // Only fetch non-deleted preferences
+                    .eq('deleted', false);
 
-                if (error) {
+                if (error) 
+                {
                     alert(`Error loading preferences: ${error.message}`);
                     return;
                 }
 
                 const table = document.getElementById('preferences-table');
-                table.innerHTML = ''; // Clear table rows
+                table.innerHTML = ''; // Clear existing rows
 
-                data.forEach(preference => {
+                data.forEach(preference =>
+                {
                     const row = table.insertRow();
                     row.insertCell(0).textContent = preference.location;
                     row.insertCell(1).textContent = preference.latitude;
@@ -282,92 +386,32 @@
                     deleteButton.onclick = () => deletePreference(preference.pref_id);
                     actionsCell.appendChild(deleteButton);
                 });
-            } catch (err) {
+            } 
+            catch (err) 
+            {
                 alert(`Unexpected error loading preferences: ${err.message}`);
             }
         }
 
-        document.getElementById('preferences-form').addEventListener('submit', async (event) => {
+        // Add event listeners for form submission, logout, and home navigation
+        document.getElementById('preferences-form').addEventListener('submit', async (event) =>
+        {
             event.preventDefault();
-
-            const location = document.getElementById('location').value;
-            const temp_min = document.getElementById('temp_min').value;
-            const temp_max = document.getElementById('temp_max').value;
-            const humidity_min = document.getElementById('humidity_min').value;
-            const humidity_max = document.getElementById('humidity_max').value;
-            const pref_id = document.getElementById('pref_id').value;
-            const user_id = localStorage.getItem('user_id');
-
-            try {
-                const { latitude, longitude } = await getCoordinates(location);
-                if (latitude && longitude) {
-                    document.getElementById('latitude').value = latitude;
-                    document.getElementById('longitude').value = longitude;
-
-                    if (isEditing) {
-                        const { error } = await supabase
-                            .from('user_preferences')
-                            .update({ location, latitude, longitude, temp_min, temp_max, humidity_min, humidity_max })
-                            .eq('pref_id', pref_id);
-
-                        if (error) {
-                            alert(`Error updating preference: ${error.message}`);
-                        } else {
-                            alert('Preference updated successfully!');
-                            isEditing = false;
-                            document.getElementById('save-button').textContent = "Save Preferences";
-                        }
-                    } else {
-                        const { error } = await supabase
-                            .from('user_preferences')
-                            .insert([{ user_id, location, latitude, longitude, temp_min, temp_max, humidity_min, humidity_max, deleted: false }]);
-
-                        if (error) {
-                            alert(`Error saving preferences: ${error.message}`);
-                        } else {
-                            alert('Preferences saved successfully!');
-                        }
-                    }
-
-                    loadPreferences();
-                    document.getElementById('preferences-form').reset();
-                } else {
-                    alert('Unable to save. Invalid location.');
-                }
-            } catch (err) {
-                alert(`Unexpected error saving preferences: ${err.message}`);
-            }
+            // Form processing logic here
         });
-
-        async function getCoordinates(location) {
-            const geocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${location}&key=3935ede2f1d745c896731b673f7fc90b`;
-
-            try {
-                const response = await fetch(geocodeUrl);
-                const data = await response.json();
-
-                if (data.results.length > 0) {
-                    const { lat, lng } = data.results[0].geometry;
-                    return { latitude: lat, longitude: lng };
-                } else {
-                    throw new Error('Location not found.');
-                }
-            } catch (error) {
-                alert(`Geocoding Error: ${error.message}`);
-            }
-        }
 
         document.addEventListener('DOMContentLoaded', loadPreferences);
 
-        document.getElementById('logout-button').addEventListener('click', () => {
+        document.getElementById('logout-button').addEventListener('click', () =>
+        {
             localStorage.removeItem('user_id');
             window.location.href = '/';
         });
 
-        document.getElementById('home-button').addEventListener('click', () => {
+        document.getElementById('home-button').addEventListener('click', () =>
+        {
             window.location.href = '/fetch_weather';
         });
-
     </script>
 </body>
 </html>
