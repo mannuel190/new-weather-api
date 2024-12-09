@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
 
+import os
 import json
 import requests
 import traceback
 from supabase import create_client, Client
+from dot_env import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Supabase configuration
-supabase_url = 'https://ewuamuzcbsrkmpjkrdmn.supabase.co'
-supabase_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3dWFtdXpjYnNya21wamtyZG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAxNDE0MDIsImV4cCI6MjA0NTcxNzQwMn0.SPo5KG3ufHN0dt4Jxvl-sAJ9tZanRA9G1JxGHFrLOBc'
+supabase_url = os.getenv('SUPABASE_URL')
+supabase_key = os.getenv('SUPABASE_KEY')
 supabase: Client = create_client(supabase_url, supabase_key)
 
 # Slack webhook URL
-slack_webhook_url = "https://hooks.slack.com/services/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"
+slack_webhook_url = os.getenv('SLACK_WEBHOOK_URL')
 
 def send_slack_alert(message):
     """Send an alert message to Slack using a webhook."""
