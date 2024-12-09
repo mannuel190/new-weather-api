@@ -10,7 +10,7 @@ supabase_url = 'https://ewuamuzcbsrkmpjkrdmn.supabase.co'
 supabase_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3dWFtdXpjYnNya21wamtyZG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAxNDE0MDIsImV4cCI6MjA0NTcxNzQwMn0.SPo5KG3ufHN0dt4Jxvl-sAJ9tZanRA9G1JxGHFrLOBc'
 supabase: Client = create_client(supabase_url, supabase_key)
 
-# Slack webhook URL (replace with your actual Slack Webhook URL)
+# Slack webhook URL
 slack_webhook_url = "https://hooks.slack.com/services/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"
 
 def send_slack_alert(message):
@@ -105,7 +105,7 @@ def check_preferences():
             print(f"Humidity data unavailable for preference {pref_id} at location '{location}'.")
 
 if __name__ == "__main__":
-    """Run the preference check once."""
+    """Run the preference check."""
     try:
         check_preferences()
     except Exception as e:
