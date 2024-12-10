@@ -1,18 +1,23 @@
 #!/usr/bin/env python3
 
-
+import os
+from dotenv import load_dotenv
 from flask import Flask, jsonify, request, render_template  # Import render_template
 from supabase import create_client, Client
 from flask_cors import CORS
 import requests
 from datetime import datetime, timedelta
 
+
+# Load environment variables
+load_dotenv()
+
 app = Flask(__name__)
 CORS(app)
 
 # Supabase configuration
-SUPABASE_URL = 'https://ewuamuzcbsrkmpjkrdmn.supabase.co'
-SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3dWFtdXpjYnNya21wamtyZG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAxNDE0MDIsImV4cCI6MjA0NTcxNzQwMn0.SPo5KG3ufHN0dt4Jxvl-sAJ9tZanRA9G1JxGHFrLOBc'
+SUPABASE_URL = os.getenv('SUPABASE_URL')
+SUPABASE_KEY = os.getenv('SUPABASE_KEY')
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 @app.route("/")

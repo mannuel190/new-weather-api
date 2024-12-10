@@ -5,7 +5,7 @@ import json
 import requests
 import traceback
 from supabase import create_client, Client
-from dot_env import load_dotenv
+from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
