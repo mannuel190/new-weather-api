@@ -1,42 +1,40 @@
-# Ignore environment files
 .env
 
-# Ignore build and Python cache files
+
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# Ignore virtual environments
+
 env/
 .venv/
 
-# Ignore editor and IDE files
+
 *.vscode/
 .idea/
 *.sublime-workspace
 *.sublime-project
 
-# Ignore logs and debug files
 *.log
 *.tmp
 
 
 
-# Ignore coverage and test artifacts
+
 coverage/
 *.coverage
 *.cover
 *.lcov
 
-# Ignore database files
+
 *.sqlite3
 
-# Ignore linting and other configuration files
+
 .hintrc
 .eslintrc
 .prettierrc
 
-# Ignore deployment-related files
+
 *.key
 *.pem
