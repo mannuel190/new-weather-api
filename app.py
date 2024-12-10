@@ -7,6 +7,9 @@ from supabase import create_client, Client
 from flask_cors import CORS
 import requests
 from datetime import datetime, timedelta
+from config import OPEN_CAGE_API_KEY, OPEN_CAGE_URL
+from config import MAPBOX_ACCESS_TOKEN
+from config import SUPABASE_URL, SUPABASE_KEY
 
 
 # Load environment variables
@@ -20,21 +23,52 @@ SUPABASE_URL = os.getenv('SUPABASE_URL')
 SUPABASE_KEY = os.getenv('SUPABASE_KEY')
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-@app.route("/")
-def login_page():
-    return render_template('login.html')
+@app.route('/')
+def login():
+    return render_template(
+        'login.html',
+        supabase_url=SUPABASE_URL,
+        supabase_key=SUPABASE_KEY
+    )
 
 @app.route("/register")
 def registration_page():
-    return render_template('user_registration.html')
+    return render_template(
+        'user_registration.html',
+        supabase_url=SUPABASE_URL,
+        supabase_key=SUPABASE_KEY
+    )
 
-@app.route("/fetch_weather")
-def weather_page():
-    return render_template('fetch_weather.html')
+@app.route('/fetch_weather')
+def fetch_weather():
+    return render_template(
+        'fetch_weather.html',
+        mapbox_access_token=MAPBOX_ACCESS_TOKEN
+    )
 
-@app.route("/preferences")
-def preferences_page():
-    return render_template('user_preferences.html')
+@app.route('/preferences')
+def user_preferences():
+    return render_template(
+        'user_preferences.html',
+        supabase_url=SUPABASE_URL,
+        supabase_key=SUPABASE_KEY
+    )
+
+@app.route('/geocode')
+def geocode():
+    location = request.args.get('location')
+    if not location:
+        return jsonify({"error": "Location is required"}), 400
+    
+    # Building OpenCage API URL
+    url = f"{OPEN_CAGE_URL}?q={location}&key={OPEN_CAGE_API_KEY}"
+    try:
+        # Makeing call
+        response = requests.get(url)
+        response.raise_for_status()
+        return jsonify(response.json())
+    except requests.exceptions.RequestException as e:
+        return jsonify({"error": str(e)}), 500
 
 def fetch_weather_data(latitude, longitude, start_date, end_date):
     URL = f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&start_date={start_date}&end_date={end_date}&hourly=temperature_2m,relative_humidity_2m"
@@ -62,6 +96,7 @@ def fetch_weather_data(latitude, longitude, start_date, end_date):
         supabase.table("weather_data").insert(record).execute()
 
     return weather_list
+
 
 @app.route('/weather', methods=['GET'])
 def weather_endpoint():

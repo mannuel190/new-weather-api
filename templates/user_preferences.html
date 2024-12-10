@@ -287,8 +287,8 @@
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
     
         // Supabase configuration
-        const supabaseUrl = 'https://ewuamuzcbsrkmpjkrdmn.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3dWFtdXpjYnNya21wamtyZG1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAxNDE0MDIsImV4cCI6MjA0NTcxNzQwMn0.SPo5KG3ufHN0dt4Jxvl-sAJ9tZanRA9G1JxGHFrLOBc';
+        const supabaseUrl = "{{ supabase_url }}";
+        const supabaseKey = "{{ supabase_key }}";
         const supabase = createClient(supabaseUrl, supabaseKey);
     
         let isEditing = false;
@@ -299,20 +299,25 @@
          * @returns {Promise<Object>} - The latitude and longitude of the location
          */
         async function getCoordinates(location) {
-            const geocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(location)}&key=3935ede2f1d745c896731b673f7fc90b`;
+            const geocodeUrl = `/geocode?location=${encodeURIComponent(location)}`;
             try {
                 const response = await fetch(geocodeUrl);
                 const data = await response.json();
     
-                if (data.results.length > 0) {
+                if (response.ok && data.results && data.results.length > 0) 
+                {
                     const { lat, lng } = data.results[0].geometry;
                     return { latitude: lat, longitude: lng };
-                } else {
-                    throw new Error("Location not found.");
+                } 
+                else 
+                {
+                    throw new Error(data.error || "Location not found.");
                 }
-            } catch (error) {
-                alert(`Geocoding Error: ${error.message}`);
-                return null;
+            } 
+            catch (error) 
+            {
+                console.error("Geocoding Error:", error.message);
+                document.getElementById("weatherData").innerText = `Geocoding Error: ${error.message}`;
             }
         }
     

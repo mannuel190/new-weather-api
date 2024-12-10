@@ -116,6 +116,9 @@
     <!-- Import Mapbox JS -->
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js"></script>
     <script>
+        // Dynamically set the Mapbox API access token from the server
+        mapboxgl.accessToken = "{{ mapbox_access_token }}";
+
         /**
          * Set the default dates to today's date
          */
@@ -130,7 +133,7 @@
         document.addEventListener('DOMContentLoaded', setDefaultDates);
 
         // Set the Mapbox API access token
-        mapboxgl.accessToken = 'pk.eyJ1IjoibWFubnVlbGFkZSIsImEiOiJjbTNjODJqZWQxbWdzMmxzZTJwbzBoeHNxIn0.6cYb5nF7itMY_r9w40Bijw';
+        mapboxgl.accessToken = "{{ mapbox_access_token }}";
 
         /**
          * Fetch latitude and longitude for a given location
@@ -138,24 +141,25 @@
          */
         async function getCoordinates(location)
         {
-            const geocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${location}&key=3935ede2f1d745c896731b673f7fc90b`;
+            const geocodeUrl = `/geocode?location=${encodeURIComponent(location)}`;
             try 
             {
                 const response = await fetch(geocodeUrl);
                 const data = await response.json();
 
-                if (data.results.length > 0) 
+                if (response.ok && data.results && data.results.length > 0) 
                 {
                     const { lat, lng } = data.results[0].geometry;
                     return { latitude: lat, longitude: lng };
                 } 
                 else 
                 {
-                    throw new Error("Location not found.");
+                    throw new Error(data.error || "Location not found.");
                 }
             } 
             catch (error) 
             {
+                console.error("Geocoding Error:", error.message);
                 document.getElementById("weatherData").innerText = `Geocoding Error: ${error.message}`;
             }
         }
